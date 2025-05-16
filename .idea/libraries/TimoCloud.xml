@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="TimoCloud">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../IdeaLibraries/TimoCloud.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
