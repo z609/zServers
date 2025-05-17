@@ -17,6 +17,12 @@ repositories {
     }
 }
 
+processResources {
+    filesMatching("*.yml") {
+        expand(project.properties)
+    }
+}
+
 group 'me.z609'
 version '0.1.0'
 
@@ -43,10 +49,10 @@ publishing {
 }
 
 tasks.named('shadowJar', ShadowJar) {
-    archiveClassifier = ''
+    archiveFileName = 'zServers.jar'
 }
 
-tasks.compileJava.dependsOn(clean)
+//tasks.compileJava.dependsOn(clean)
 tasks.jar.finalizedBy(shadowJar)
 tasks.publishToMavenLocal.dependsOn(shadowJar)
 tasks.build.finalizedBy(publishToMavenLocal)
