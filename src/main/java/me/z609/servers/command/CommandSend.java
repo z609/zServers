@@ -44,7 +44,7 @@ public class CommandSend implements CommandExecutor {
             case "all":
                 playerNames.addAll(plugin.getServerManager().getServers().stream()
                         .flatMap(z -> z.getPlayerNames().stream())
-                        .collect(Collectors.toList()));
+                        .toList());
                 break;
 
             case "current":
