@@ -83,10 +83,9 @@ public class HostData {
         if(obj instanceof Host) {
             obj = ((Host) obj).getData();
         }
-        if(!(obj instanceof HostData)) {
+        if(!(obj instanceof HostData o)) {
             return false;
         }
-        HostData o = (HostData)obj;
         return this.ip.equals(o.ip) && this.port==o.port && this.name.equals(o.name);
     }
 }
