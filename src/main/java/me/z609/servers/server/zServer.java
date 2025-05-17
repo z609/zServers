@@ -28,6 +28,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import redis.clients.jedis.Jedis;
@@ -1161,5 +1162,20 @@ public class zServer implements Listener {
 
     public zWorld getMainWorld() {
         return mainWorld;
+    }
+
+    public zWorld getWorld(World bukkitWorld){
+        for(zWorld world : worlds.values())
+            if(world.isWorld(bukkitWorld))
+                return world;
+        return null;
+    }
+
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent event){
+        if(!isWorld(event.getWorld()))
+            return;
+        zWorld world = getWorld(event.getWorld());
+        event.setCancelled(world.isSpawnChunk(event.getChunk().getChunkSnapshot()));
     }
 }

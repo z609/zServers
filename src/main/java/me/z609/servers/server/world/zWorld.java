@@ -4,16 +4,14 @@ import me.z609.servers.CallbackRun;
 import me.z609.servers.server.zServer;
 import me.z609.servers.server.zServerManager;
 import me.z609.servers.zServers;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -33,6 +31,7 @@ public class zWorld {
     private final zWorldData data;
     private World world;
     private Location spawnpoint;
+    private Set<ChunkSnapshot> spawnChunks = ConcurrentHashMap.newKeySet();
 
     public zWorld(zServer server, String name, zWorldData data) {
         if(name.trim().isEmpty()) {
@@ -176,12 +175,14 @@ public class zWorld {
         int total = (radius * 2 + 1) * (radius * 2 + 1);
         AtomicInteger loaded = new AtomicInteger(0);
 
+        spawnChunks.clear(); // clear before starting.
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
                 int chunkX = centerX + dx;
                 int chunkZ = centerZ + dz;
 
                 world.getChunkAtAsync(chunkX, chunkZ, chunk -> {
+                    spawnChunks.add(chunk.getChunkSnapshot());
                     if (loaded.incrementAndGet() >= total) {
                         // Once all chunks are loaded, call whenDone on the main thread
                         plugin.getServer().getScheduler().runTask(plugin, whenDone);
@@ -281,6 +282,11 @@ public class zWorld {
     public boolean isSaved(){
         return data == null || data.isSaved();
     }
+
+    public boolean isWorld(World world){
+        return world.getName().equals(bukkitName);
+    }
+
     public static void runWithLock(String key, Runnable action) {
         ReentrantLock lock = locks.computeIfAbsent(key, k -> new ReentrantLock());
         lock.lock();
@@ -292,5 +298,9 @@ public class zWorld {
                 locks.remove(key, lock);
             }
         }
+    }
+
+    public boolean isSpawnChunk(ChunkSnapshot chunkSnapshot) {
+        return spawnChunks.contains(chunkSnapshot);
     }
 }
