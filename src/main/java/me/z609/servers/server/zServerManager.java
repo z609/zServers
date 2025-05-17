@@ -406,7 +406,7 @@ public class zServerManager {
                     .toList();
 
             if (localAvailable.size() <= requiredAvailable
-                    || totalServers <= (template.getMinServers() + template.getEmptyServers())) {
+                    || totalServers <= template.getMinServers() + template.getEmptyServers()) {
                 break;
             }
 
