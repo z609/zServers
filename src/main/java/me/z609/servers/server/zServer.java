@@ -51,6 +51,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 
+@SuppressWarnings("ConstantExpression")
 public class zServer implements Listener {
 
     private zServers plugin;
