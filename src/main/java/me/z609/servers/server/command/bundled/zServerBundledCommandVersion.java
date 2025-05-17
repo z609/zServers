@@ -98,7 +98,6 @@ public class zServerBundledCommandVersion implements zServerCommand {
                     sender.sendMessage("Use /plugins to get a list of plugins.");
                 }
             }
-            return;
         }
 
         private void describeToSender(Plugin plugin, CommandSender sender) {
