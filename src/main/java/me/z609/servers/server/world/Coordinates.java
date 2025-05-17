@@ -29,7 +29,7 @@ public class Coordinates {
     }
 
     public Coordinates(int x, int y, int z, float yaw, float pitch) {
-        this((double)x, (double)y, (double)z);
+        this(x, y, (double)z);
     }
 
     public Coordinates(double x, double y, double z){
@@ -58,10 +58,14 @@ public class Coordinates {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Coordinates || obj instanceof Location)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Coordinates || obj instanceof Location)) {
+            return false;
+        }
 
-        Coordinates other = (obj instanceof Location)
+        Coordinates other = obj instanceof Location
                 ? new Coordinates((Location) obj)
                 : (Coordinates) obj;
 
@@ -102,7 +106,7 @@ public class Coordinates {
             throw new IllegalArgumentException("Invalid string " + s + " (not a coordinate)");
         }
 
-        double x = 0, y = 0, z = 0;
+        double x, y, z;
         float yaw = 0, pitch = 0;
         try {
             x = Double.parseDouble(args[0]);

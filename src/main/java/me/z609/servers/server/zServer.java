@@ -56,7 +56,7 @@ public class zServer implements Listener {
     private zServerManager manager;
     private zServerData data;
     private Map<UUID, Player> players = new HashMap<UUID, Player>();
-    private boolean busy = false;
+    private boolean busy;
     private BukkitBridge bukkitBridge;
     private final File modulesContainer;
     private URLClassLoader moduleClassLoader;
@@ -108,7 +108,7 @@ public class zServer implements Listener {
         fields.put("busy", String.valueOf(busy));
 
         jedis.hmset(key, fields);
-        boolean added = (jedis.sadd("servers", data.getName()) == 1);
+        boolean added = jedis.sadd("servers", data.getName()) == 1;
         if(added){
             plugin.getRedisBridge().sendMessage("servers", "add", data.getName());
         }
@@ -544,9 +544,10 @@ public class zServer implements Listener {
             // TODO Add logic for persistent servers (keeping player where they were last logged in)
         }
 
-        if (spawnpoint == null)
+        if (spawnpoint == null) {
             throw new ConnectionException("The server cannot find a place to put the player.\n" +
                     "The spawnpoint for " + mainWorld.getName() + " is null - is the world even loaded?");
+        }
 
         resetPlayer(player, false);
         player.teleport(spawnpoint);

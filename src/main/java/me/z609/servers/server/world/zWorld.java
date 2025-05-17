@@ -31,8 +31,8 @@ public class zWorld {
     private final boolean mainWorld;
     private final String bukkitName;
     private final zWorldData data;
-    private World world = null;
-    private Location spawnpoint = null;
+    private World world;
+    private Location spawnpoint;
 
     public zWorld(zServer server, String name, zWorldData data) {
         if(name.trim().isEmpty()) {
@@ -181,7 +181,7 @@ public class zWorld {
                 int chunkX = centerX + dx;
                 int chunkZ = centerZ + dz;
 
-                world.getChunkAtAsync(chunkX, chunkZ, (chunk) -> {
+                world.getChunkAtAsync(chunkX, chunkZ, chunk -> {
                     if (loaded.incrementAndGet() >= total) {
                         // Once all chunks are loaded, call whenDone on the main thread
                         plugin.getServer().getScheduler().runTask(plugin, whenDone);

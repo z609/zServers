@@ -17,7 +17,7 @@ public class zServerData {
     private final int number;
     private zServerTemplate template; // For getting default data
     Map<UUID, String> players = new HashMap<>();
-    boolean busy = false;
+    boolean busy;
 
     public zServerData(zServerManager manager, String host, String name, zServerTemplate template){
         this.manager = manager;

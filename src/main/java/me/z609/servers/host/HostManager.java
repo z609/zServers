@@ -19,7 +19,7 @@ public class HostManager implements PluginMessageListener {
     public static final String BUNGEECORD_MSG_CHANNEL = "BungeeCord";
 
     private zServers plugin;
-    private long lastUpdate = 0;
+    private long lastUpdate;
     private BukkitTask updater;
 
     private Map<String, HostData> hosts = new HashMap<String, HostData>();

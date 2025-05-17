@@ -28,8 +28,9 @@ public class zServerBundledCommand {
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof zServerBundledCommand command))
+        if(!(obj instanceof zServerBundledCommand cmd)) {
             return false;
-        return command.getName().equals(this.name);
+        }
+        return cmd.getName().equals(this.name);
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public class zPlayerPickupItemEvent extends zServersPlayerEvent implements zServersCancellableEvent {
 
     private final Item item;
-    private boolean flyAtPlayer = true;
+    private boolean flyAtPlayer;
     private final int remaining;
     private boolean cancelled;
 

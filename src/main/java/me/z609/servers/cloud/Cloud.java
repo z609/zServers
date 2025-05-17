@@ -9,7 +9,7 @@ public class Cloud {
     private CloudProvider provider;
     private zServers plugin;
 
-    private boolean full = false;
+    private boolean full;
 
     public Cloud(zServers plugin) {
         this.plugin = plugin;

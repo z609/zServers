@@ -21,7 +21,7 @@ public class zInventoryClickEvent extends zServersPlayerEvent implements zServer
     private int rawSlot;
     private ItemStack currentItem;
     private int hotbarKey;
-    private boolean cancelled = false;
+    private boolean cancelled;
 
     public zInventoryClickEvent(zServer server, Player player, InventoryAction action, ClickType clickType, Inventory inventory,
                                 Inventory clickedInventory, InventoryType.SlotType slotType, int slot, int rawSlot,

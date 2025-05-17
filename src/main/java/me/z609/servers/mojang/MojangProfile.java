@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class MojangProfile {
 
-    private long fetched = 0;
+    private long fetched;
     private UUID uniqueId;
     private String name;
 

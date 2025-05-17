@@ -13,7 +13,7 @@ public class zEntityDeathEvent extends zServersEvent implements zServersCancella
     private final LivingEntity entity;
     private final List<ItemStack> drops;
     private int droppedExp;
-    private boolean cancelled = false;
+    private boolean cancelled;
 
     public zEntityDeathEvent(zServer server, LivingEntity entity, List<ItemStack> drops, int droppedExp, boolean cancelled) {
         super(server);

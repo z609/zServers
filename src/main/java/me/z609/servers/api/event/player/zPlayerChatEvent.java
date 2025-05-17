@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 
 public class zPlayerChatEvent extends zServersPlayerEvent implements zServersCancellableEvent {
-    private boolean cancelled = false;
+    private boolean cancelled;
     private String message;
-    private Set<Player> recipients = new HashSet<>();
+    private Set<Player> recipients;
     private String format = "<%1$s> %2$s";
 
     public zPlayerChatEvent(zServer server, Player player, boolean cancelled, String message, Set<Player> recipients) {

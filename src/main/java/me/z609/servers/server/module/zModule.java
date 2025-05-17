@@ -7,7 +7,7 @@ public abstract class zModule {
     private zServer server;
     private zModuleDescription description;
 
-    private boolean loaded, enabled = false;
+    private boolean loaded, enabled;
 
     public void hook(zServer server, zModuleDescription description){
         this.server = server;

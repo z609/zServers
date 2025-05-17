@@ -38,7 +38,7 @@ public class zServerManager {
     private Map<String, zWorldData> availableWorlds = new HashMap<>();
     private Map<String, zServerBundledCommand> bundledCommands = new HashMap<>();
 
-    private long lastOrchestration = 0;
+    private long lastOrchestration;
 
     public zServerManager(zServers plugin){
         this.plugin = plugin;
