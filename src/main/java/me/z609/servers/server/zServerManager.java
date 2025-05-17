@@ -459,9 +459,7 @@ public class zServerManager {
         // === PHASE 5: SCALE DOWN IF UNDERUTILIZED ===
         if (utilization < 0.3 && totalServers > template.getMinServers() + 1 && localAvailable > requiredAvailable) {
             Optional<zServer> lastAvailable = getLocalServersByGroup(template.getGroup()).stream()
-                    .filter(server -> !server.isBusy())
-                    .sorted(Comparator.comparingInt(zServer::getNumber).reversed())
-                    .findFirst();
+                    .filter(server -> !server.isBusy()).max(Comparator.comparingInt(zServer::getNumber));
             lastAvailable.ifPresent(server -> {
                 stopServer(server);
                 plugin.getLogger().info("Scaling down " + template.getGroup() + " due to low utilization.");
