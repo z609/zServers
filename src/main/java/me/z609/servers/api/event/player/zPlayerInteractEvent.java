@@ -76,7 +76,7 @@ public class zPlayerInteractEvent extends zServersPlayerEvent implements zServer
     }
 
     public boolean isBlockInHand() {
-        return !this.hasItem() ? false : this.item.getType().isBlock();
+        return this.hasItem() && this.item.getType().isBlock();
     }
 
     @Override public boolean isCancelled() { return cancelled; }
