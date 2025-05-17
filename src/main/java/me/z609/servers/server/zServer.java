@@ -317,7 +317,7 @@ public class zServer implements Listener {
                 zModuleDescription description = retrieveModuleDescription(file);
                 zModule module = instantiateModule(description);
                 modules.add(module);
-            } catch (IllegalModuleDescriptionException|Exception ex) {
+            } catch (Exception ex) {
                 logSevere("[Module Loader] Could not load module \"" + file.getName() + "\": " + ex.getMessage());
                 ex.printStackTrace();
             }
