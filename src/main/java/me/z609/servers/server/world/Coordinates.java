@@ -142,9 +142,9 @@ public class Coordinates {
     public static List<Coordinates> parseList(String s){
         String[] args = s.split(";");
         List<Coordinates> list = new ArrayList<>();
-        for(int i = 0; i < args.length; i++){
+        for (String arg : args) {
             try {
-                list.add(parse(args[i]));
+                list.add(parse(arg));
             } catch (Exception ex) {
                 Logger.getLogger("Minecraft").warning(ex.getMessage());
             }
