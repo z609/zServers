@@ -144,8 +144,9 @@ public class zServer implements Listener {
         updateModules();
         startModuleManager();
         List<zModule> sortedModules = topologicalSortModules(modules);
-        for(zModule module : sortedModules)
+        for(zModule module : sortedModules) {
             loadModule(module);
+        }
 
         CallbackRun<zWorld> callback = new CallbackRun<zWorld>() {
             @Override
@@ -166,8 +167,9 @@ public class zServer implements Listener {
         };
 
         openWorld(data.getTemplate().getMainWorld(), null, callback, true);
-        for(String worldName : data.getTemplate().getWorlds())
+        for(String worldName : data.getTemplate().getWorlds()) {
             openWorld(worldName, null, callback);
+        }
 
 
 
@@ -175,8 +177,9 @@ public class zServer implements Listener {
 
     private void started(){
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        for(zModule module : modules.values())
+        for(zModule module : modules.values()) {
             module.start();
+        }
     }
 
     private List<zModule> topologicalSortModules(Map<String, zModule> modules) {
@@ -198,11 +201,13 @@ public class zServer implements Listener {
                              Set<String> visiting) {
         String name = module.getDescription().getName();
 
-        if (visited.contains(name))
+        if (visited.contains(name)) {
             return;
+        }
 
-        if (visiting.contains(name))
+        if (visiting.contains(name)) {
             throw new IllegalStateException("Circular dependency detected involving " + name);
+        }
 
         visiting.add(name);
         for (String depName : module.getDescription().getDepends()) {
@@ -241,16 +246,18 @@ public class zServer implements Listener {
 
     private void cancelAllTasks(zModule module){
         Set<zServerTask> tasks = moduleTasks.get(module);
-        if(tasks == null || tasks.isEmpty())
+        if(tasks == null || tasks.isEmpty()) {
             return;
+        }
         Iterator<zServerTask> iterator = tasks.iterator();
         while(iterator.hasNext()){
             zServerTask task = iterator.next();
             task.cancel();
             iterator.remove();
         }
-        if(tasks.isEmpty())
+        if(tasks.isEmpty()) {
             moduleTasks.remove(module);
+        }
     }
 
     private void updateModules(){
@@ -278,8 +285,9 @@ public class zServer implements Listener {
 
     private void startModuleManager(){
         File[] jars = modulesContainer.listFiles(new JarFilter());
-        if(jars == null || jars.length == 0)
+        if(jars == null || jars.length == 0) {
             return;
+        }
         URL[] jarUrls = Arrays.stream(jars).map(file -> {
             try {
                 return file.toURI().toURL();
@@ -300,8 +308,9 @@ public class zServer implements Listener {
 
     private Set<zModule> instantiateModules(File[] files) {
         Set<zModule> modules = new HashSet<>();
-        if (files == null)
+        if (files == null) {
             return modules;
+        }
 
         for (File file : files) {
             try {
@@ -325,9 +334,10 @@ public class zServer implements Listener {
             InstantiationException,
             IllegalAccessException {
         Class<?> clazz = moduleClassLoader.loadClass(description.getMainClass());
-        if(!zModule.class.isAssignableFrom(clazz))
+        if(!zModule.class.isAssignableFrom(clazz)) {
             throw new IllegalModuleDescriptionException("Invalid module: Invalid `main` class path in module.yml - " +
                     "not assignable from " + zModule.class.getName() + " (Is it up to date?)");
+        }
 
         zModule module = (zModule) clazz.getDeclaredConstructor().newInstance();
         module.hook(this, description);
@@ -352,8 +362,9 @@ public class zServer implements Listener {
 
         List<zModule> sortedModules = topologicalSortModules(modules);
         Collections.reverse(sortedModules);
-        for(zModule module : sortedModules)
+        for(zModule module : sortedModules) {
             disableModule(module);
+        }
         modules.clear(); // All modules should be disabled, and subsequently unloaded.
 
         bukkitBridge.unregister();
@@ -425,15 +436,15 @@ public class zServer implements Listener {
     /**
      * Called when the player needs to have their health restored, inventory cleared, etc. This is
      * especially important at join (considering they can be coming from another zServer...)
-     * @param player
      */
     public void resetPlayer(Player player, boolean clearInventory){
         player.closeInventory();
         player.setMaxHealth(20.0D);
         player.setHealth(player.getMaxHealth());
         player.setFoodLevel(20);
-        for(PotionEffect effect : player.getActivePotionEffects())
+        for(PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
+        }
         if(clearInventory){
             player.getInventory().setArmorContents(null);
             player.getInventory().setItemInOffHand(null);
@@ -539,20 +550,25 @@ public class zServer implements Listener {
 
         resetPlayer(player, false);
         player.teleport(spawnpoint);
-        if(join.getMessage() != null)
+        if(join.getMessage() != null) {
             broadcastMessage(join.getMessage());
+        }
 
         //player.sendMessage(ChatColor.GOLD + "You have been connected to " + data.getName() + " on " + data.getHostName() + ".");
         return true;
     }
 
     private void updateVisibilityFor(Player player, boolean join) {
-        if (join && !isOnline(player)) return; // Only run join logic if player is online
+        if (join && !isOnline(player)) {
+            return; // Only run join logic if player is online
+        }
 
         boolean isInvisible = isInvisible(player);
 
         for (Player other : getOnlinePlayers()) {
-            if (other.equals(player)) continue;
+            if (other.equals(player)) {
+                continue;
+            }
 
             // Player joining logic
             if (join) {
@@ -582,8 +598,9 @@ public class zServer implements Listener {
 
     public void broadcastMessage(String... messages){
         for(String s : messages){
-            for(Player player : players.values())
+            for(Player player : players.values()) {
                 player.sendMessage(s);
+            }
         }
         sendConsoleMessage(messages);
     }
@@ -605,18 +622,26 @@ public class zServer implements Listener {
         listeners.add(listener);
         plugin.getServer().getPluginManager().registerEvents(listener, plugin);
 
-        if (!(listener instanceof zListener)) return;
+        if (!(listener instanceof zListener)) {
+            return;
+        }
 
         Map<Class<? extends zServersEvent>, List<zEventExecutor<?>>> bindings = new HashMap<>();
 
         Class<?> clazz = listener.getClass();
         while (clazz != null && zListener.class.isAssignableFrom(clazz)) {
             for (Method method : clazz.getDeclaredMethods()) {
-                if (!method.isAnnotationPresent(zEventHandler.class)) continue;
-                if (method.getParameterCount() != 1) continue;
+                if (!method.isAnnotationPresent(zEventHandler.class)) {
+                    continue;
+                }
+                if (method.getParameterCount() != 1) {
+                    continue;
+                }
 
                 Class<?> param = method.getParameterTypes()[0];
-                if (!zServersEvent.class.isAssignableFrom(param)) continue;
+                if (!zServersEvent.class.isAssignableFrom(param)) {
+                    continue;
+                }
 
                 method.setAccessible(true);
                 Class<? extends zServersEvent> eventClass = (Class<? extends zServersEvent>) param;
@@ -652,7 +677,9 @@ public class zServer implements Listener {
         Set<Listener> listeners = this.listeners.get(module);
         if (listeners != null) {
             Map<Class<? extends zServersEvent>, List<zEventExecutor<?>>> bindings = listenerBindings.remove(listener);
-            if (bindings == null) return;
+            if (bindings == null) {
+                return;
+            }
 
             for (Map.Entry<Class<? extends zServersEvent>, List<zEventExecutor<?>>> entry : bindings.entrySet()) {
                 List<zEventExecutor<?>> registered = customListeners.get(entry.getKey());
@@ -691,8 +718,9 @@ public class zServer implements Listener {
         players.remove(player.getUniqueId());
         updateVisiblePlayersFor(player);
         updateVisibilityFor(player, false);
-        if(quit.getMessage() != null)
+        if(quit.getMessage() != null) {
             broadcastMessage(quit.getMessage());
+        }
     }
 
     public Collection<Player> getOnlinePlayers() {
@@ -749,14 +777,16 @@ public class zServer implements Listener {
             throw new IllegalArgumentException("Cannot load world with no name, unless it is the main one.");
         }
         data = manager.getWorldData(name); // May return null if not explicitly specified.
-        if(main)
+        if(main) {
             name = "main"; // Main world will always be called "main"
+        }
         zWorld world = new zWorld(this, name, data);
         worlds.put(name, world); // Key will always match world name
         bukkitWorldNames.add(world.getBukkitName());
         world.loadWorld(callbackWhenWorldDownloaded, callbackWhenWorldFullyLoaded);
-        if(main)
+        if(main) {
             mainWorld = world;
+        }
         return world;
     }
 
@@ -811,8 +841,9 @@ public class zServer implements Listener {
     }
 
     public void log(Level level, String... messages){
-        for (String message : messages)
+        for (String message : messages) {
             plugin.getServer().getLogger().log(level, "[Server Context - " + data.getName() + "] " + message);
+        }
     }
 
     public void logWarning(String... messages){
@@ -849,9 +880,9 @@ public class zServer implements Listener {
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof zServer))
+        if(!(obj instanceof zServer other)) {
             return false;
-        zServer other = (zServer)obj;
+        }
         return other.getName().equals(getName()) && other.data.getHost().equals(data.getHost());
     }
 
@@ -860,15 +891,18 @@ public class zServer implements Listener {
     }
 
     public void sendConsoleMessage(String... messages){
-        for(String message : messages)
+        for(String message : messages) {
             plugin.getServer().getConsoleSender().sendMessage("[Chat Context - " + data.getName() + "] " + message);
+        }
     }
 
     public static zModuleDescription retrieveModuleDescription(File jarFile)
             throws IOException, IllegalModuleDescriptionException {
         try (JarFile jar = new JarFile(jarFile)) {
             JarEntry entry = jar.getJarEntry("module.yml");
-            if (entry == null) throw new InvalidModuleException("module.yml not found");
+            if (entry == null) {
+                throw new InvalidModuleException("module.yml not found");
+            }
 
             try (InputStream in = jar.getInputStream(entry)) {
                 Configuration config = YamlConfiguration.loadConfiguration(new InputStreamReader(in));
@@ -886,19 +920,22 @@ public class zServer implements Listener {
     }
 
     public zModule getModule(String name){
-        if(modules.containsKey(name))
+        if(modules.containsKey(name)) {
             return modules.get(name);
-        for(String moduleName : modules.keySet())
-            if(moduleName.equalsIgnoreCase(name))
+        }
+        for(String moduleName : modules.keySet()) {
+            if(moduleName.equalsIgnoreCase(name)) {
                 return modules.get(moduleName);
+            }
+        }
         return null;
     }
 
     public <T> T getModuleForUse(String name){
         zModule module = modules.get(name);
-        if(module == null)
+        if(module == null) {
             throw new IllegalArgumentException("Module is not available: " + name);
-        //noinspection unchecked
+        }
         return (T) module;
     }
 
@@ -907,8 +944,11 @@ public class zServer implements Listener {
     }
 
     public void setInvisible(Player player, boolean invisible) {
-        if (invisible) invisiblePlayers.add(player.getUniqueId());
-        else invisiblePlayers.remove(player.getUniqueId());
+        if (invisible) {
+            invisiblePlayers.add(player.getUniqueId());
+        } else {
+            invisiblePlayers.remove(player.getUniqueId());
+        }
 
         // Immediately update visibility for all others
         updateVisiblePlayersFor(player);
@@ -916,7 +956,9 @@ public class zServer implements Listener {
 
     public void hidePlayer(Player hiding) {
         for (Player to : Bukkit.getOnlinePlayers()) {
-            if (to.equals(hiding)) continue;
+            if (to.equals(hiding)) {
+                continue;
+            }
             if (isOnline(to)) {
                 to.hidePlayer(plugin, hiding);
             }
@@ -924,12 +966,20 @@ public class zServer implements Listener {
     }
 
     public void showPlayer(Player showing) {
-        if (isInvisible(showing)) return;
-        if (!isOnline(showing)) return; // Only show players *from* this zServer
+        if (isInvisible(showing)) {
+            return;
+        }
+        if (!isOnline(showing)) {
+            return; // Only show players *from* this zServer
+        }
 
         for (Player to : Bukkit.getOnlinePlayers()) {
-            if (to.equals(showing)) continue;
-            if (!isOnline(to)) continue; // Only show *to* players in this zServer
+            if (to.equals(showing)) {
+                continue;
+            }
+            if (!isOnline(to)) {
+                continue; // Only show *to* players in this zServer
+            }
 
             to.showPlayer(plugin, showing);
         }
@@ -943,20 +993,30 @@ public class zServer implements Listener {
 
 
     public void showPlayer(Player showing, Player to) {
-        if (!isOnline(showing)) return; // Enforce source is part of this zServer
-        if (!isOnline(to)) return;      // Enforce destination is part of this zServer
-        if (isInvisible(showing)) return;
+        if (!isOnline(showing)) {
+            return; // Enforce source is part of this zServer
+        }
+        if (!isOnline(to)) {
+            return;      // Enforce destination is part of this zServer
+        }
+        if (isInvisible(showing)) {
+            return;
+        }
 
         to.showPlayer(plugin, showing);
     }
 
     public void updateVisiblePlayersFor(Player player) {
-        if (!isOnline(player)) return;
+        if (!isOnline(player)) {
+            return;
+        }
 
         boolean selfInvisible = isInvisible(player);
 
         for (Player other : Bukkit.getOnlinePlayers()) {
-            if (other.equals(player)) continue;
+            if (other.equals(player)) {
+                continue;
+            }
 
             boolean otherOnline = isOnline(other);
             boolean otherInvisible = isInvisible(other);
@@ -1011,8 +1071,9 @@ public class zServer implements Listener {
 
     public void cancelTask(zServerTask task){
         task.cancelBukkitTask();
-        if(!moduleTasks.containsKey(task.getModule()))
+        if(!moduleTasks.containsKey(task.getModule())) {
             return;
+        }
         moduleTasks.get(task.getModule()).remove(task);
     }
 
@@ -1021,8 +1082,9 @@ public class zServer implements Listener {
     }
 
     public void registerCommand(zServerCommand command, zServerCommandExecutor executor) {
-        if(isCommand(command))
+        if(isCommand(command)) {
             return;
+        }
         commandMap.put(command, executor);
     }
 
@@ -1044,21 +1106,24 @@ public class zServer implements Listener {
         Player player = event.getPlayer();
 
         // Check if the player is in this server (per-zServer logic)
-        if(!isOnline(player))
+        if(!isOnline(player)) {
             return;
+        }
 
         String message = event.getMessage();
         // Unlikely that the COMMAND wouldn't start with /, but I do this check because I'm going to be sub-stringing anyway.
-        if(!message.startsWith("/"))
+        if(!message.startsWith("/")) {
             return;
+        }
 
         message = message.substring(1);
         event.setCancelled(processCommand(player, message));
     }
 
     public boolean processCommand(CommandSender sender, String message) {
-        if (message == null || message.trim().isEmpty())
+        if (message == null || message.trim().isEmpty()) {
             return false;
+        }
 
         String[] split = message.trim().split("\\s+"); // splits on one or more spaces
         String label = split[0];
@@ -1106,7 +1171,7 @@ public class zServer implements Listener {
 
     public Player getPlayerExact(String name) {
         Player player = plugin.getServer().getPlayerExact(name);
-        return (player != null && isOnline(player) ? player : null);
+        return player != null && isOnline(player) ? player : null;
     }
 
     public zWorld getMainWorld() {

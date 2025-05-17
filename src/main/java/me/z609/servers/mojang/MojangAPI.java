@@ -24,9 +24,11 @@ public class MojangAPI {
     }
 
     private MojangProfile getProfile(UUID uniqueId, String name){
-        for(MojangProfile profile : profileCache)
-            if(profile.getName().equals(name) || (uniqueId != null && profile.getUniqueId().toString().equals(uniqueId.toString())))
+        for(MojangProfile profile : profileCache) {
+            if(profile.getName().equals(name) || uniqueId != null && profile.getUniqueId().toString().equals(uniqueId.toString())) {
                 return profile;
+            }
+        }
         MojangProfile profile = new MojangProfile(uniqueId, name);
         profileCache.add(profile);
         return profile;

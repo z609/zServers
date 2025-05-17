@@ -38,8 +38,9 @@ public class BukkitBridge implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onRespawn(PlayerRespawnEvent event){
         Player player = event.getPlayer();
-        if(!isHere(player))
+        if(!isHere(player)) {
             return;
+        }
         zPlayerRespawnEvent zevent = new zPlayerRespawnEvent(
                 server, player, event.getRespawnLocation()
         );
@@ -50,8 +51,9 @@ public class BukkitBridge implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent event){
         Player player = event.getPlayer();
-        if(!isHere(player))
+        if(!isHere(player)) {
             return;
+        }
 
         Set<Player> recipients = new HashSet<>(server.getOnlinePlayers());
         String message = event.getMessage();
@@ -73,8 +75,9 @@ public class BukkitBridge implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onDeath(PlayerDeathEvent event){
         Player player = event.getEntity();
-        if(!isHere(player))
+        if(!isHere(player)) {
             return;
+        }
 
         zPlayerDeathEvent zevent = new zPlayerDeathEvent(server,
                 player, event.getDrops(),
@@ -99,15 +102,17 @@ public class BukkitBridge implements Listener {
         event.setNewLevel(zevent.getNewLevel());
         event.setNewTotalExp(zevent.getNewTotalExp());
         event.setDroppedExp(zevent.getDropExp());
-        if(zevent.getDeathMessage() != null)
+        if(zevent.getDeathMessage() != null) {
             server.broadcastMessage(zevent.getDeathMessage());
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onBreak(org.bukkit.event.block.BlockBreakEvent event){
         Player player = event.getPlayer();
-        if(!isHere(player))
+        if(!isHere(player)) {
             return;
+        }
 
         zBlockBreakEvent zevent =
                 new zBlockBreakEvent(server, player, event.isCancelled(), event.isDropItems());
@@ -119,8 +124,9 @@ public class BukkitBridge implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlace(org.bukkit.event.block.BlockPlaceEvent event){
         Player player = event.getPlayer();
-        if(!isHere(player))
+        if(!isHere(player)) {
             return;
+        }
 
         zBlockPlaceEvent zevent =
                 new zBlockPlaceEvent(server,
@@ -138,8 +144,9 @@ public class BukkitBridge implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (!isHere(event.getEntity().getLocation()))
+        if (!isHere(event.getEntity().getLocation())) {
             return;
+        }
 
         zEntityDamageEvent zEvent = new zEntityDamageEvent(
                 server,
@@ -157,8 +164,9 @@ public class BukkitBridge implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (!isHere(event.getPlayer()))
+        if (!isHere(event.getPlayer())) {
             return;
+        }
 
         zPlayerMoveEvent zEvent = new zPlayerMoveEvent(
                 server,
@@ -176,8 +184,9 @@ public class BukkitBridge implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!isHere(event.getPlayer()))
+        if (!isHere(event.getPlayer())) {
             return;
+        }
 
         zPlayerInteractEvent zEvent = new zPlayerInteractEvent(
                 server,
@@ -200,13 +209,14 @@ public class BukkitBridge implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player))
+        if (!(event.getWhoClicked() instanceof Player player)) {
             return;
+        }
 
-        if (!isHere(event.getWhoClicked().getLocation()))
+        if (!isHere(event.getWhoClicked().getLocation())) {
             return;
-        Player player = (Player) event.getWhoClicked();
-
+        }
+        
         zInventoryClickEvent zEvent = new zInventoryClickEvent(
                 server,
                 player,
@@ -229,10 +239,12 @@ public class BukkitBridge implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClose(InventoryCloseEvent event) {
-        if(!(event.getPlayer() instanceof Player player))
+        if(!(event.getPlayer() instanceof Player player)) {
             return;
-        if (!isHere(player))
+        }
+        if (!isHere(player)) {
             return;
+        }
 
         zInventoryCloseEvent zEvent = new zInventoryCloseEvent(server,
                 player,
@@ -243,8 +255,9 @@ public class BukkitBridge implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDeath(EntityDeathEvent event) {
-        if (!isHere(event.getEntity().getLocation()))
+        if (!isHere(event.getEntity().getLocation())) {
             return;
+        }
 
         zEntityDeathEvent zEvent = new zEntityDeathEvent(server,
                 event.getEntity(),
@@ -257,8 +270,9 @@ public class BukkitBridge implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (!isHere(event.getPlayer()))
+        if (!isHere(event.getPlayer())) {
             return;
+        }
 
         zPlayerDropItemEvent zEvent = new zPlayerDropItemEvent(server, event.getPlayer(), event.getItemDrop());
         server.callEvent(zEvent);
@@ -267,8 +281,9 @@ public class BukkitBridge implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (!isHere(event.getPlayer()))
+        if (!isHere(event.getPlayer())) {
             return;
+        }
 
         zPlayerPickupItemEvent zEvent = new zPlayerPickupItemEvent(
                 server,
@@ -285,12 +300,13 @@ public class BukkitBridge implements Listener {
 
     @EventHandler
     public void onFoodLevelChange(FoodLevelChangeEvent event){
-        if(!(event.getEntity() instanceof Player))
+        if(!(event.getEntity() instanceof Player player)) {
             return;
-        if(!isHere(event.getEntity().getLocation()))
+        }
+        if(!isHere(event.getEntity().getLocation())) {
             return;
-
-        Player player = (Player) event.getEntity();
+        }
+        
         zFoodLevelChangeEvent zEvent = new zFoodLevelChangeEvent(
                 server,
                 player,

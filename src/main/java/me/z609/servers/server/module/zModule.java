@@ -15,24 +15,28 @@ public abstract class zModule {
     }
 
     public void load(){
-        if(loaded || enabled)
+        if(loaded || enabled) {
             throw new IllegalStateException("zModule already loaded!");
+        }
         loaded = true;
         onLoad();
     }
 
     public void enable(){
-        if(!loaded)
+        if(!loaded) {
             throw new IllegalStateException("zModule not loaded!");
-        if(enabled)
+        }
+        if(enabled) {
             throw new IllegalStateException("zModule already enabled!");
+        }
         enabled = true;
         onEnable();
     }
 
     public void disable(){
-        if(!loaded || !enabled)
+        if(!loaded || !enabled) {
             throw new IllegalStateException("zModule not enabled!");
+        }
         enabled = false;
         onDisable();
     }
@@ -50,10 +54,12 @@ public abstract class zModule {
     }
 
     public void start(){
-        if(!loaded)
+        if(!loaded) {
             throw new IllegalStateException("zModule not loaded!");
-        if(!enabled)
+        }
+        if(!enabled) {
             throw new IllegalStateException("zModule not enabled!");
+        }
         onStarted();
     }
 

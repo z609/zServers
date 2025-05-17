@@ -36,8 +36,9 @@ public class HostManager implements PluginMessageListener {
         host = new Host(plugin, HostData.fromServer(plugin.getServer()));
         plugin.getLogger().log(Level.INFO, "Recognized this host as " + host.getData().getName() + " " +
                 "[" + host.getData().getIp() + ":" + host.getData().getPort() + "]");
-        if(addThisHost())
+        if(addThisHost()) {
             plugin.getLogger().log(Level.INFO, "This host has been added!");
+        }
 
         updateHosts();
         this.updater = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
@@ -91,8 +92,9 @@ public class HostManager implements PluginMessageListener {
     private HostData loadHost(Jedis jedis, String name) {
         String key = "host:" + name;
         Map<String, String> data = jedis.hgetAll(key);
-        if(data == null || data.isEmpty())
+        if(data == null || data.isEmpty()) {
             return null;
+        }
 
         String ip = data.get("ip");
         int port;

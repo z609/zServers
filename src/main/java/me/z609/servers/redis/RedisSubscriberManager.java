@@ -27,8 +27,9 @@ public class RedisSubscriberManager {
     }
 
     public void subscribe(RedisSubscriber subscriber) {
-        if (subscribers.contains(subscriber))
+        if (subscribers.contains(subscriber)) {
             throw new IllegalArgumentException("Already subscribed with this instance");
+        }
 
         subscribers.add(subscriber);
         channels.add(subscriber.getChannel());
@@ -37,8 +38,9 @@ public class RedisSubscriberManager {
     }
 
     public void unsubscribe(RedisSubscriber subscriber) {
-        if (!subscribers.remove(subscriber))
+        if (!subscribers.remove(subscriber)) {
             return; // Already removed or never subscribed
+        }
 
         boolean removedChannel = channels.remove(subscriber.getChannel());
 

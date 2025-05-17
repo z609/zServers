@@ -87,102 +87,117 @@ public class zServerTemplate {
         int maxPlayers;
         try {
             maxPlayers = Integer.parseInt(data.getOrDefault("maxPlayers", "20"));
-            if(maxPlayers != this.maxPlayers)
+            if(maxPlayers != this.maxPlayers) {
                 this.maxPlayers = maxPlayers;
+            }
         } catch (NumberFormatException ignored) {
         }
 
         String mainWorld = data.getOrDefault("mainWorld", "");
-        if(!mainWorld.equals(this.mainWorld))
+        if(!mainWorld.equals(this.mainWorld)) {
             this.mainWorld = mainWorld;
+        }
 
         String[] worlds = Arrays.stream(data.getOrDefault("worlds", "")
                         .split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toArray(String[]::new);
-        if(!Arrays.equals(worlds, this.worlds))
+        if(!Arrays.equals(worlds, this.worlds)) {
             this.worlds = worlds;
+        }
 
         String[] availableMaps = Arrays.stream(data.getOrDefault("availableMaps", "")
                         .split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .toArray(String[]::new);;;
-        if(!Arrays.equals(availableMaps, this.availableMaps))
+                .toArray(String[]::new);
+        if(!Arrays.equals(availableMaps, this.availableMaps)) {
             this.availableMaps = availableMaps;
+        }
 
         String[] modules = Arrays.stream(data.getOrDefault("modules", "")
                         .split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toArray(String[]::new);
-        if(!Arrays.equals(modules, this.modules))
+        if(!Arrays.equals(modules, this.modules)) {
             this.modules = modules;
+        }
 
         String[] bundledCommands = Arrays.stream(data.getOrDefault("bundledCommands", "")
                         .split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toArray(String[]::new);
-        if(bundledCommands.length == 0)
+        if(bundledCommands.length == 0) {
             bundledCommands = manager.getBundledCommandNames().toArray(new String[0]);
-        if(!Arrays.equals(bundledCommands, this.bundledCommands))
+        }
+        if(!Arrays.equals(bundledCommands, this.bundledCommands)) {
             this.bundledCommands = bundledCommands;
+        }
 
         String[] blockedCommands = Arrays.stream(data.getOrDefault("blockedCommands", "")
                         .split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toArray(String[]::new);
-        if(!Arrays.equals(blockedCommands, this.blockedCommands))
+        if(!Arrays.equals(blockedCommands, this.blockedCommands)) {
             this.blockedCommands = blockedCommands;
+        }
 
         GameMode gameMode;
         try {
             gameMode = GameMode.valueOf(data.getOrDefault("gameMode", "SURVIVAL"));
-            if(gameMode != this.gameMode)
+            if(gameMode != this.gameMode) {
                 this.gameMode = gameMode;
+            }
         } catch (IllegalArgumentException ignored) {
         }
 
         boolean pvp = Boolean.parseBoolean(data.getOrDefault("pvp", "true"));
-        if(pvp != this.pvp)
+        if(pvp != this.pvp) {
             this.pvp = pvp;
+        }
 
         String[] games = data.get("games") != null ? data.get("games").trim().split(",") : new String[0];
-        if(!Arrays.equals(games, this.games))
+        if(!Arrays.equals(games, this.games)) {
             this.games = games;
+        }
 
         int minServers;
         try {
             minServers = Integer.parseInt(data.getOrDefault("minServers", "0"));
-            if(minServers != this.minServers)
+            if(minServers != this.minServers) {
                 this.minServers = minServers;
+            }
         } catch (NumberFormatException ignored) {
         }
 
         int emptyServers;
         try {
             emptyServers = Integer.parseInt(data.getOrDefault("emptyServers", "0"));
-            if(emptyServers != this.emptyServers)
+            if(emptyServers != this.emptyServers) {
                 this.emptyServers = emptyServers;
+            }
         } catch (NumberFormatException ignored) {
         }
 
         double scaleUpBuffer;
         try {
             scaleUpBuffer = Double.parseDouble(data.getOrDefault("scaleUpBuffer", "999"));
-            if(scaleUpBuffer != this.scaleUpBuffer)
+            if(scaleUpBuffer != this.scaleUpBuffer) {
                 this.scaleUpBuffer = scaleUpBuffer;
+            }
         } catch (NumberFormatException ignored) {
         }
 
         int scaleCooldown;
         try {
             scaleCooldown = Integer.parseInt(data.getOrDefault("scaleCooldown", "300000"));
-            if(scaleCooldown != this.scaleCooldown)
+            if(scaleCooldown != this.scaleCooldown) {
                 this.scaleCooldown = scaleCooldown;
+            }
         } catch (NumberFormatException ignored) {
         }
     }

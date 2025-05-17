@@ -83,7 +83,9 @@ public enum GameRule {
     @SuppressWarnings("unchecked")
     public <T> T get(World world) {
         String raw = world.getGameRuleValue(ruleName);
-        if (raw == null) return null;
+        if (raw == null) {
+            return null;
+        }
 
         try {
             if (ruleType == Boolean.class) {
@@ -99,15 +101,18 @@ public enum GameRule {
     }
 
     public void set(World world, Object value) {
-        if(value == null)
+        if(value == null) {
             throw new IllegalArgumentException("Value of " + name() + " cannot be NULL");
-        if(!ruleType.isInstance(value))
+        }
+        if(!ruleType.isInstance(value)) {
             throw new IllegalArgumentException("Value of " + name() + " must be in the type of " + ruleType.getSimpleName() + " - got " + value.getClass().getSimpleName() + " instead");
+        }
         world.setGameRuleValue(ruleName, String.valueOf(value));
     }
 
     public static void applyDefaults(World world){
-        for(GameRule rule : values())
+        for(GameRule rule : values()) {
             world.setGameRuleValue(rule.ruleName, String.valueOf(rule.ruleDefault));
+        }
     }
 }

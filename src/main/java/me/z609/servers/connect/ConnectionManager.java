@@ -200,8 +200,9 @@ public class ConnectionManager implements Listener {
     public void onQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
         zServer server = plugin.getServerManager().getLocalServer(player);
-        if(server == null)
+        if(server == null) {
             return;
+        }
         UUID uuid = player.getUniqueId();
 
         zPlayerPreTransferEvent preTransferEvent = null;
@@ -230,8 +231,9 @@ public class ConnectionManager implements Listener {
 
     public zServerData getBestServer(String group, boolean filterOutBusy) {
         Collection<zServerData> servers = plugin.getServerManager().getServersByGroup(group);
-        if (group.isEmpty())
+        if (group.isEmpty()) {
             return null;
+        }
         return servers.stream()
                 .filter(server -> !filterOutBusy || !server.isBusy())
                 .sorted(Comparator
@@ -254,8 +256,9 @@ public class ConnectionManager implements Listener {
     }
 
     public zServerData transferServer(Player player, zServerData data) {
-        if (data == null)
+        if (data == null) {
             return null;
+        }
 
         HostData host = data.getHost();
         HostData currentHost = plugin.getHostManager().getHost().getData();
@@ -335,8 +338,9 @@ public class ConnectionManager implements Listener {
 
 
     public zServerData transferServer(String player, zServerData data){
-        if(data==null)
+        if(data == null) {
             return data;
+        }
         Player bukkitPlayer = plugin.getServer().getPlayer(player);
         if(bukkitPlayer != null && bukkitPlayer.isOnline()){
             // They are local, so fall back to the local logic scope.

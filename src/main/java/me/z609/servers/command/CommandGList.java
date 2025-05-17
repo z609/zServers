@@ -33,8 +33,9 @@ public class CommandGList implements CommandExecutor  {
 
         for (zServerData server : servers) {
             List<String> players = new ArrayList<>(server.getPlayerNames());
-            if (!showEmpty && players.isEmpty())
+            if (!showEmpty && players.isEmpty()) {
                 continue;
+            }
 
             totalPlayers += players.size();
 

@@ -104,7 +104,9 @@ public class zServerBundledCommandTeleport implements zServerCommand {
 
             if (!relative || input.length() > 1) {
                 boolean exact = input.contains(".");
-                if (relative) input = input.substring(1);
+                if (relative) {
+                    input = input.substring(1);
+                }
 
                 double testResult = getDouble(sender, input);
                 if (testResult == MIN_COORD_MINUS_ONE) {
@@ -112,7 +114,9 @@ public class zServerBundledCommandTeleport implements zServerCommand {
                 }
                 result += testResult;
 
-                if (!exact && !relative) result += 0.5f;
+                if (!exact && !relative) {
+                    result += 0.5f;
+                }
             }
             if (min != 0 || max != 0) {
                 if (result < min) {

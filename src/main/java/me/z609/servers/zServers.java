@@ -32,16 +32,21 @@ public class zServers extends JavaPlugin {
     public void onLoad() {
         config = getConfig();
         getLogger().log(Level.INFO, "Loading zServers configuration...");
-        if (!config.contains("redis.host") || config.getString("redis.host").isEmpty())
+        if (!config.contains("redis.host") || config.getString("redis.host").isEmpty()) {
             config.set("redis.host", "127.0.0.1");
-        if (!config.contains("redis.port"))
+        }
+        if (!config.contains("redis.port")) {
             config.set("redis.port", 6379);
-        if (!config.contains("redis.username"))
+        }
+        if (!config.contains("redis.username")) {
             config.set("redis.username", "default");
-        if (!config.contains("redis.password"))
+        }
+        if (!config.contains("redis.password")) {
             config.set("redis.password", "");
-        if(!config.contains("message.no-permission"))
+        }
+        if(!config.contains("message.no-permission")) {
             config.set("message.no-permission", "§cYou don't have permission to use this command!");
+        }
         saveConfig();
         reloadConfig();
 

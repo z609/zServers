@@ -66,10 +66,12 @@ public class HostData {
     }
 
     public void updateAddress(String ip, int port) {
-        if(!this.ip.equals(ip))
+        if(!this.ip.equals(ip)) {
             this.ip = ip;
-        if(this.port != port)
+        }
+        if(this.port != port) {
             this.port = port;
+        }
     }
 
     public Collection<String> getPlayerNames(){
@@ -78,10 +80,12 @@ public class HostData {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Host)
+        if(obj instanceof Host) {
             obj = ((Host) obj).getData();
-        if(!(obj instanceof HostData))
+        }
+        if(!(obj instanceof HostData)) {
             return false;
+        }
         HostData o = (HostData)obj;
         return this.ip.equals(o.ip) && this.port==o.port && this.name.equals(o.name);
     }

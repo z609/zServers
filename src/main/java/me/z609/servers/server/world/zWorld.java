@@ -35,8 +35,9 @@ public class zWorld {
     private Location spawnpoint = null;
 
     public zWorld(zServer server, String name, zWorldData data) {
-        if(name.trim().isEmpty())
+        if(name.trim().isEmpty()) {
             throw new IllegalArgumentException("World name cannot be empty/blank");
+        }
         this.server = server;
         this.manager = server.getManager();
         this.plugin = server.getPlugin();
@@ -50,16 +51,18 @@ public class zWorld {
     private void downloadWorld(CallbackRun<zWorld> callback) {
         if(data == null) {
             server.logWarning("No world data provided for " + name + " - it WILL be generated");
-            if(callback != null)
+            if(callback != null) {
                 callback.callback(this); // skip download
+            }
             return;
         }
 
         String url = data.getUrl();
         if (url == null || url.isEmpty()) {
             server.logWarning("No world URL provided for " + name);
-            if(callback != null)
+            if(callback != null) {
                 callback.callback(this); // skip download
+            }
             return;
         }
 
@@ -97,11 +100,14 @@ public class zWorld {
 
     public void loadWorld(CallbackRun<zWorld> callbackWhenWorldDownloaded,
                                       CallbackRun<zWorld> callbackWhenWorldFullyLoaded) {
-        downloadWorld((downloaded) -> {
-            if(callbackWhenWorldDownloaded != null)
+        downloadWorld(downloaded -> {
+            if(callbackWhenWorldDownloaded != null) {
                 callbackWhenWorldDownloaded.callback(downloaded);
+            }
 
-            if (downloaded == null) return; // fail early
+            if (downloaded == null) {
+                return; // fail early
+            }
             loadDownloadedWorld(callbackWhenWorldFullyLoaded);
         });
     }
@@ -116,8 +122,9 @@ public class zWorld {
 
             if (world == null) {
                 server.logWarning("Failed to create world: " + bukkitName);
-                if(callback != null)
+                if(callback != null) {
                     callback.callback(null);
+                }
                 return;
             }
 
@@ -146,8 +153,9 @@ public class zWorld {
                 }
 
                 server.logInfo("World " + name + " is fully loaded with spawn and chunks.");
-                if(callback != null)
+                if(callback != null) {
                     callback.callback(this);
+                }
             });
         });
     }
@@ -212,7 +220,9 @@ public class zWorld {
     }
 
     private void unzip(File zipFile, File destDir) throws IOException {
-        if (!destDir.exists()) destDir.mkdirs();
+        if (!destDir.exists()) {
+            destDir.mkdirs();
+        }
 
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
             ZipEntry entry;

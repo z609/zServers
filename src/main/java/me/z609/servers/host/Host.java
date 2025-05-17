@@ -61,8 +61,9 @@ public class Host {
         for(int i = 0; i < players.size(); i++){
             Player player = players.get(i);
             builder.append(player.getUniqueId() + ":" + player.getDisplayName());
-            if(i != (players.size() - 1))
+            if (i != players.size() - 1) {
                 builder.append(",");
+            }
         }
         return builder.toString().trim();
     }

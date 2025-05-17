@@ -22,14 +22,18 @@ public class zModuleDescription {
 
     public zModuleDescription(Configuration config) throws IllegalModuleDescriptionException {
         this.config = config;
-        if(config == null)
+        if(config == null) {
             throw new IllegalModuleDescriptionException("Invalid module: No module.yml found or incompatible (is it up to date?)");
-        if(!config.contains("name"))
+        }
+        if(!config.contains("name")) {
             throw new IllegalModuleDescriptionException("Invalid module: Invalid `name` found in module.yml (is it up to date?)");
-        if(!config.contains("version"))
+        }
+        if(!config.contains("version")) {
             throw new IllegalModuleDescriptionException("Invalid module: Invalid `version` found in module.yml (is it up to date?)");
-        if(!config.contains("main") || !config.isString("main"))
+        }
+        if(!config.contains("main") || !config.isString("main")) {
             throw new IllegalModuleDescriptionException("Invalid module: Invalid `main` class path found in module.yml (Is it up to date?)");
+        }
 
         this.name = config.getString("name");
         this.version = config.getString("version");

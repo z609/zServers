@@ -91,15 +91,18 @@ public class Coordinates {
     }
 
     public static Coordinates parse(String s){
-        if(s == null)
+        if(s == null) {
             return null;
+        }
 
-        if(!s.contains(","))
+        if(!s.contains(",")) {
             throw new IllegalArgumentException("Invalid string " + s + " (not a coordinate)");
+        }
 
         String[] args = s.split(",");
-        if(args.length < 3)
+        if(args.length < 3) {
             throw new IllegalArgumentException("Invalid string " + s + " (not a coordinate)");
+        }
 
         double x = 0, y = 0, z = 0;
         float yaw = 0, pitch = 0;

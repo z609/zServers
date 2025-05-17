@@ -33,8 +33,9 @@ public class zWorldData {
 
     public void update(Jedis jedis){
         this.data = jedis.hgetAll("world:" + name);
-        if(data == null || data.isEmpty())
+        if(data == null || data.isEmpty()) {
             return;
+        }
 
         this.friendlyName = data.containsKey("friendlyName") ? data.remove("friendlyName") : name;
         this.url = data.remove("url");

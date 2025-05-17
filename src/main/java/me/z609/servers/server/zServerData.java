@@ -31,8 +31,9 @@ public class zServerData {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < args.length - 1; i++) {
                 builder.append(args[i]);
-                if(i != args.length - 2)
+                if(i != args.length - 2) {
                     builder.append("-");
+                }
             }
             group = builder.toString();
             try {
@@ -84,9 +85,11 @@ public class zServerData {
     }
 
     public boolean isOnline(String name){
-        for(String player : players.values())
-            if(player.equalsIgnoreCase(name))
+        for(String player : players.values()) {
+            if(player.equalsIgnoreCase(name)) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -109,8 +112,9 @@ public class zServerData {
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof zServerData other))
+        if(!(obj instanceof zServerData other)) {
             return false;
+        }
         return other.getName().equals(getName()) && other.getHost().equals(getHost());
     }
 }

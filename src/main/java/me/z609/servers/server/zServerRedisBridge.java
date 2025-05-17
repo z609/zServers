@@ -24,14 +24,16 @@ public class zServerRedisBridge {
     }
 
     public void connect(CallbackRun<Jedis> callback){
-        if(!isAvailable())
+        if(!isAvailable()) {
             throw new IllegalStateException("zServers Redis Bridge is unavailable");
+        }
         getServersBridge().connect(callback, ZSERVERS_MODULE_DB);
     }
 
     public <Return> Return connect(Callback<Return, Jedis> callback){
-        if(!isAvailable())
+        if(!isAvailable()) {
             throw new IllegalStateException("zServers Redis Bridge is unavailable");
+        }
         return getServersBridge().connect(callback, ZSERVERS_MODULE_DB);
     }
 

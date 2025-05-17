@@ -55,7 +55,7 @@ public class zServerBundledCommandVersion implements zServerCommand {
                 StringBuilder name = new StringBuilder();
 
                 for (String arg : args) {
-                    if (name.length() > 0) {
+                    if (!name.isEmpty()) {
                         name.append(' ');
                     }
 

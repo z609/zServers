@@ -81,8 +81,9 @@ public class zServerManager {
         plugin.getLogger().log(Level.INFO, "Now listening for busy states.");
         updateAllWorlds();
         plugin.getLogger().log(Level.INFO, "Loaded " + availableWorlds.size() + " pre-defined worlds into memory.");
-        for(zServerTemplate template : templates)
+        for(zServerTemplate template : templates) {
             updateModulesContainer(template);
+        }
 
         plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
             @Override
@@ -230,12 +231,14 @@ public class zServerManager {
     private zServerData loadServer(Jedis jedis, String name) {
         String key = "server:" + name;
         Map<String, String> data = jedis.hgetAll(key);
-        if(data == null || data.isEmpty())
+        if(data == null || data.isEmpty()) {
             return null;
+        }
 
         String host = data.get("host");
-        if(host == null)
+        if(host == null) {
             return null;
+        }
 
         zServerTemplate template = getTemplateByName(data.getOrDefault("template", ""));
         zServerData server = getServerByName(name);
@@ -257,16 +260,20 @@ public class zServerManager {
     }
 
     public zServerData getServerByName(String name){
-        for(zServerData server : allServers)
-            if(server.getName().equalsIgnoreCase(name))
+        for(zServerData server : allServers) {
+            if(server.getName().equalsIgnoreCase(name)) {
                 return server;
+            }
+        }
         return null;
     }
 
     public zServerData getServerByPlayer(String player){
-        for(zServerData server : allServers)
-            if(server.isOnline(player))
+        for(zServerData server : allServers) {
+            if(server.isOnline(player)) {
                 return server;
+            }
+        }
         return null;
     }
 
@@ -276,17 +283,21 @@ public class zServerManager {
 
     public Collection<zServerData> getServersByGroup(String group){
         List<zServerData> data = new ArrayList<>();
-        for(zServerData server : allServers)
-            if(server.getGroup().equalsIgnoreCase(group))
+        for(zServerData server : allServers) {
+            if(server.getGroup().equalsIgnoreCase(group)) {
                 data.add(server);
+            }
+        }
         return Collections.unmodifiableCollection(data);
     }
 
     public Collection<zServer> getLocalServersByGroup(String group){
         List<zServer> servers = new ArrayList<>();
-        for(zServer server : this.servers.values())
-            if(server.getData().getGroup().equalsIgnoreCase(group))
+        for(zServer server : this.servers.values()) {
+            if(server.getData().getGroup().equalsIgnoreCase(group)) {
                 servers.add(server);
+            }
+        }
         return Collections.unmodifiableCollection(servers);
     }
 
@@ -339,9 +350,11 @@ public class zServerManager {
     }
 
     public zServerTemplate getTemplateByName(String name){
-        for(zServerTemplate template : templates)
-            if(template.getName().equalsIgnoreCase(name))
+        for(zServerTemplate template : templates) {
+            if(template.getName().equalsIgnoreCase(name)) {
                 return template;
+            }
+        }
         return null;
     }
 
@@ -482,9 +495,11 @@ public class zServerManager {
     }
 
     public zServerData find(String name){
-        for(zServerData server : allServers)
-            if(server.isOnline(name))
+        for(zServerData server : allServers) {
+            if(server.isOnline(name)) {
                 return server;
+            }
+        }
         return null;
     }
 
@@ -512,9 +527,11 @@ public class zServerManager {
     }
 
     public zServer getServer(Player player){
-        for(zServer server : servers.values())
-            if (server.isOnline(player))
+        for(zServer server : servers.values()) {
+            if (server.isOnline(player)) {
                 return server;
+            }
+        }
         return null;
     }
 
@@ -523,9 +540,11 @@ public class zServerManager {
     }
 
     public zServer getServer(World world){
-        for(zServer server : servers.values())
-            if(server.isWorld(world))
+        for(zServer server : servers.values()) {
+            if(server.isWorld(world)) {
                 return server;
+            }
+        }
         return null;
     }
 
@@ -548,8 +567,9 @@ public class zServerManager {
     private Map<zServerTemplate, Long> updateLock = new ConcurrentHashMap<zServerTemplate, Long>();
 
     private int updateModulesContainer(zServerTemplate template){
-        if(updateLock.containsKey(template))
+        if(updateLock.containsKey(template)) {
             return template.getModules().length;
+        }
         updateLock.put(template, System.currentTimeMillis());
 
         File container = getModulesContainer(template);
@@ -566,8 +586,9 @@ public class zServerManager {
                 plugin.getLogger().info("[Global Deployment] Determined there to be a newer version for " + module + " in the global modules directory.");
             }
 
-            if(!copyOver || !global.exists())
+            if(!copyOver || !global.exists()) {
                 continue;
+            }
 
             try {
                 Files.copy(global.toPath(), module.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -601,8 +622,9 @@ public class zServerManager {
             }
         }
 
-        if(!updateLock.containsKey(template))
+        if(!updateLock.containsKey(template)) {
             return modules.size();
+        }
 
         if(updated > 0){
             long updateStat = System.currentTimeMillis() - updateLock.remove(template);
@@ -622,9 +644,11 @@ public class zServerManager {
     }
 
     public zServerBundledCommand getBundledCommand(Class<? extends zServerCommand> clazz){
-        for(zServerBundledCommand command : bundledCommands.values())
-            if(command.getCommand().equals(clazz))
+        for(zServerBundledCommand command : bundledCommands.values()) {
+            if(command.getCommand().equals(clazz)) {
                 return command;
+            }
+        }
         return null;
     }
 

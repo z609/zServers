@@ -31,8 +31,9 @@ public class Cloud {
      * To be called when the host is full (typically, isSpaceHere in HostManager)
      */
     public void full(){
-        if(full)
+        if (full) {
             return;
+        }
 
         full = true;
         provider.markFull(); // Bridge to Cloud API
