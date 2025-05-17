@@ -773,11 +773,10 @@ public class zServer implements Listener {
                              CallbackRun<zWorld> callbackWhenWorldDownloaded,
                              CallbackRun<zWorld> callbackWhenWorldFullyLoaded,
                              boolean main){
-        zWorldData data;
         if(name == null && !main){
             throw new IllegalArgumentException("Cannot load world with no name, unless it is the main one.");
         }
-        data = manager.getWorldData(name); // May return null if not explicitly specified.
+        zWorldData data = manager.getWorldData(name); // May return null if not explicitly specified.
         if(main) {
             name = "main"; // Main world will always be called "main"
         }
