@@ -44,6 +44,7 @@ publishing {
 
 tasks.named('shadowJar', ShadowJar) {
     archiveClassifier = ''
+    destinationDirectory = file(System.getProperty("user.home") + File.separator + "The Nexus" + File.separator + "IdeaOutput")
 }
 
 tasks.compileJava.dependsOn(clean)
