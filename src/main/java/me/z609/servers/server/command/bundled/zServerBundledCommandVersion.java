@@ -126,7 +126,7 @@ public class zServerBundledCommandVersion implements zServerCommand {
             List<String> authors = desc.getAuthors();
 
             for (int i = 0; i < authors.size(); i++) {
-                if (result.length() > 0) {
+                if (!result.isEmpty()) {
                     result.append(ChatColor.WHITE);
 
                     if (i < authors.size() - 1) {
@@ -169,7 +169,7 @@ public class zServerBundledCommandVersion implements zServerCommand {
             List<String> authors = desc.getAuthors();
 
             for (int i = 0; i < authors.size(); i++) {
-                if (result.length() > 0) {
+                if (!result.isEmpty()) {
                     result.append(ChatColor.WHITE);
 
                     if (i < authors.size() - 1) {

@@ -53,7 +53,7 @@ public class zServerBundledCommandPlugins implements zServerCommand {
             Plugin[] plugins = Bukkit.getPluginManager().getPlugins();
 
             for (Plugin plugin : plugins) {
-                if (pluginList.length() > 0) {
+                if (!pluginList.isEmpty()) {
                     pluginList.append(ChatColor.WHITE);
                     pluginList.append(", ");
                 }
@@ -70,7 +70,7 @@ public class zServerBundledCommandPlugins implements zServerCommand {
             Collection<zModule> modules = server.getModules();
 
             for (zModule module : modules) {
-                if (moduleList.length() > 0) {
+                if (!moduleList.isEmpty()) {
                     moduleList.append(ChatColor.WHITE);
                     moduleList.append(", ");
                 }

@@ -48,7 +48,7 @@ public class zServerBundledCommandList implements zServerCommand {
                     continue;
                 }
 
-                if (online.length() > 0) {
+                if (!online.isEmpty()) {
                     online.append(", ");
                 }
 
