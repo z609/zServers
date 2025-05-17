@@ -611,7 +611,6 @@ public class zServer implements Listener {
         if (executors != null) {
             for (zEventExecutor<? extends zServersEvent> executor : new ArrayList<>(executors)) {
                 // Unsafe cast is okay since we validated class earlier
-                @SuppressWarnings("unchecked")
                 zEventExecutor<zServersEvent> safeExecutor = (zEventExecutor<zServersEvent>) executor;
                 safeExecutor.execute(event);
             }
@@ -646,8 +645,7 @@ public class zServer implements Listener {
 
                 method.setAccessible(true);
                 Class<? extends zServersEvent> eventClass = (Class<? extends zServersEvent>) param;
-
-                //noinspection unchecked
+                
                 zEventExecutor<? extends zServersEvent> wrapper = event -> {
                     try {
                         method.invoke(listener, event);

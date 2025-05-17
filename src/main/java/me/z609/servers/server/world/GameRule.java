@@ -75,12 +75,10 @@ public enum GameRule {
         return ruleType;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T getRuleDefault() {
         return (T) ruleDefault;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T get(World world) {
         String raw = world.getGameRuleValue(ruleName);
         if (raw == null) {
