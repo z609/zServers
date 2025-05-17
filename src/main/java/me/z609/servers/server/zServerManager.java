@@ -410,7 +410,7 @@ public class zServerManager {
                 break;
             }
 
-            zServer toStop = localAvailable.get(0);
+            zServer toStop = localAvailable.getFirst();
             stopServer(toStop);
             plugin.getLogger().info("Stopped server " + toStop.getName() + " as it was no longer needed.");
             totalServers--; // keep totalServers accurate in this context
