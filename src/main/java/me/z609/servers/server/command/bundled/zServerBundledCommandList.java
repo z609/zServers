@@ -55,7 +55,7 @@ public class zServerBundledCommandList implements zServerCommand {
                 online.append(player.getDisplayName());
             }
 
-            sender.sendMessage("There are " + players.size() + "/" + server.getMaxPlayers() + " players online:\n" + online.toString());
+            sender.sendMessage("There are " + players.size() + "/" + server.getMaxPlayers() + " players online:\n" + online);
         }
     }
 }

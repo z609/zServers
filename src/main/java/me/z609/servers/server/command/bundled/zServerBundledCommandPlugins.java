@@ -62,7 +62,7 @@ public class zServerBundledCommandPlugins implements zServerCommand {
                 pluginList.append(plugin.getDescription().getName());
             }
 
-            return "(" + plugins.length + "): " + pluginList.toString();
+            return "(" + plugins.length + "): " + pluginList;
         }
 
         private String getModuleList(zServer server) {
@@ -79,7 +79,7 @@ public class zServerBundledCommandPlugins implements zServerCommand {
                 moduleList.append(module.getDescription().getName());
             }
 
-            return "(" + modules.size() + "): " + moduleList.toString();
+            return "(" + modules.size() + "): " + moduleList;
         }
     }
 }
