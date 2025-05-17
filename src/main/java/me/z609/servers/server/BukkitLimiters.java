@@ -27,7 +27,7 @@ public class BukkitLimiters implements Listener {
     }
 
     private boolean isInvalid(Player player) {
-        return (!bridge.isHere(player) && bridge.isHere(player.getLocation())) ||
+        return !bridge.isHere(player) && bridge.isHere(player.getLocation()) ||
                 !isAssigned(player);
     }
 

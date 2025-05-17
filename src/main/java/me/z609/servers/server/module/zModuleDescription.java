@@ -39,10 +39,10 @@ public class zModuleDescription {
         this.version = config.getString("version");
         this.mainClass = config.getString("main");
         this.depends = config.contains("depends") ? config.getStringList("depends") : Collections.emptyList();
-        this.description = (config.contains("description") ? config.getString("description") : "");
-        this.website = (config.contains("website") ? config.getString("website") : "");
-        this.authors = (config.contains("authors") ? config.getStringList("authors") : Collections.emptyList());
-        this.hotSwappable = (config.contains("hotSwappable") && config.getBoolean("hotSwappable"));
+        this.description = config.contains("description") ? config.getString("description") : "";
+        this.website = config.contains("website") ? config.getString("website") : "";
+        this.authors = config.contains("authors") ? config.getStringList("authors") : Collections.emptyList();
+        this.hotSwappable = config.contains("hotSwappable") && config.getBoolean("hotSwappable");
     }
 
     public Configuration getConfig() {
