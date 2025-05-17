@@ -1,12 +1,10 @@
 package me.z609.servers.server.world;
 
-import net.minecraft.server.v1_12_R1.ScoreboardObjective;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;

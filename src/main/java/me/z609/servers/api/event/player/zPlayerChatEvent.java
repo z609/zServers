@@ -5,7 +5,6 @@ import me.z609.servers.api.zServersPlayerEvent;
 import me.z609.servers.server.zServer;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class zPlayerChatEvent extends zServersPlayerEvent implements zServersCancellableEvent {

@@ -5,7 +5,6 @@ import me.z609.servers.server.command.zServerCommandExecutor;
 import me.z609.servers.server.zServer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;

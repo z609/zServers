@@ -4,12 +4,7 @@ import me.z609.servers.Callback;
 import me.z609.servers.mojang.MojangProfile;
 import me.z609.servers.zServers;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import redis.clients.jedis.Jedis;
-
-import java.util.UUID;
+import org.bukkit.command.*;
 
 public class CommandFind implements CommandExecutor {
 

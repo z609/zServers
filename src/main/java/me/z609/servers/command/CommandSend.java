@@ -3,17 +3,12 @@ package me.z609.servers.command;
 import me.z609.servers.server.zServer;
 import me.z609.servers.server.zServerData;
 import me.z609.servers.zServers;
-import me.z609.servers.server.zServerManager;
-import me.z609.servers.connect.ConnectionManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandSend implements CommandExecutor {
 

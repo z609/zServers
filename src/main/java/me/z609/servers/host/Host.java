@@ -60,7 +60,7 @@ public class Host {
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < players.size(); i++){
             Player player = players.get(i);
-            builder.append(player.getUniqueId() + ":" + player.getDisplayName());
+            builder.append(player.getUniqueId()).append(":").append(player.getDisplayName());
             if (i != players.size() - 1) {
                 builder.append(",");
             }

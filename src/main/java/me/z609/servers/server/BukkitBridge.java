@@ -9,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -108,7 +110,7 @@ public class BukkitBridge implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onBreak(org.bukkit.event.block.BlockBreakEvent event){
+    public void onBreak(BlockBreakEvent event){
         Player player = event.getPlayer();
         if(!isHere(player)) {
             return;
@@ -122,7 +124,7 @@ public class BukkitBridge implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onPlace(org.bukkit.event.block.BlockPlaceEvent event){
+    public void onPlace(BlockPlaceEvent event){
         Player player = event.getPlayer();
         if(!isHere(player)) {
             return;
