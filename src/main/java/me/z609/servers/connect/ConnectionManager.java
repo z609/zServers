@@ -20,8 +20,8 @@ public class ConnectionManager implements Listener {
     private zServers plugin;
 
     // Players that are in the process of connecting, and where to send them during PlayerJoinEvent.
-    private Map<UUID, InboundConnection> connecting = new ConcurrentHashMap <UUID, InboundConnection>();
-    private Map<UUID, zServerData> transferring = new ConcurrentHashMap<UUID, zServerData>();
+    private Map<UUID, InboundConnection> connecting = new ConcurrentHashMap<>();
+    private Map<UUID, zServerData> transferring = new ConcurrentHashMap<>();
 
     public ConnectionManager(zServers plugin) {
         this.plugin = plugin;

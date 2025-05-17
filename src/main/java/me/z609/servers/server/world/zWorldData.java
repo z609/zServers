@@ -14,11 +14,11 @@ public class zWorldData {
     private zServers plugin;
     private String name;
 
-    private Map<String, String> data = new HashMap<String, String>();
+    private Map<String, String> data = new HashMap<>();
     private String friendlyName;
     private String url;
     private boolean saved;
-    private Map<String, List<Coordinates>> coordinates = new HashMap<String, List<Coordinates>>();
+    private Map<String, List<Coordinates>> coordinates = new HashMap<>();
     private Coordinates spawnpoint;
 
     public zWorldData(zServerManager manager, String name){

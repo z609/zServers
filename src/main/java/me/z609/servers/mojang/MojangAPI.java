@@ -9,7 +9,7 @@ import java.util.UUID;
 public class MojangAPI {
 
     private zServers plugin;
-    private Set<MojangProfile> profileCache = new HashSet<MojangProfile>();
+    private Set<MojangProfile> profileCache = new HashSet<>();
 
     public MojangAPI(zServers plugin) {
         this.plugin = plugin;

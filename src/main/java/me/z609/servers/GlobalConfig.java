@@ -9,7 +9,7 @@ public class GlobalConfig {
 
     private zServers plugin;
 
-    private Map<String, String> config = new HashMap<String, String>();
+    private Map<String, String> config = new HashMap<>();
     private String fallbackGroup;
     private String networkName;
 

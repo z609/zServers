@@ -55,7 +55,7 @@ public class zServer implements Listener {
     private zServers plugin;
     private zServerManager manager;
     private zServerData data;
-    private Map<UUID, Player> players = new HashMap<UUID, Player>();
+    private Map<UUID, Player> players = new HashMap<>();
     private boolean busy;
     private BukkitBridge bukkitBridge;
     private final File modulesContainer;
@@ -70,7 +70,7 @@ public class zServer implements Listener {
 
     private Map<String, zWorld> worlds = new ConcurrentHashMap<>();
     private Set<String> bukkitWorldNames = ConcurrentHashMap.newKeySet();
-    private Map<String, zModule> modules = new HashMap<String, zModule>();
+    private Map<String, zModule> modules = new HashMap<>();
     private zWorld mainWorld;
 
     private final Set<UUID> invisiblePlayers = ConcurrentHashMap.newKeySet();

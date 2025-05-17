@@ -33,7 +33,7 @@ public class zServerManager {
     private final File globalModulesContainer;
 
     private Set<zServerTemplate> templates = new HashSet<>();
-    private Set<zServerData> allServers = new HashSet<zServerData>();
+    private Set<zServerData> allServers = new HashSet<>();
     private Map<String, zServer> servers = new HashMap<>(); // servers on this host instance
     private Map<String, zWorldData> availableWorlds = new HashMap<>();
     private Map<String, zServerBundledCommand> bundledCommands = new HashMap<>();
@@ -564,7 +564,7 @@ public class zServerManager {
         return new File(getGlobalModulesContainer(), template.getName());
     }
 
-    private Map<zServerTemplate, Long> updateLock = new ConcurrentHashMap<zServerTemplate, Long>();
+    private Map<zServerTemplate, Long> updateLock = new ConcurrentHashMap<>();
 
     private int updateModulesContainer(zServerTemplate template){
         if(updateLock.containsKey(template)) {

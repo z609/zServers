@@ -22,7 +22,7 @@ public class HostManager implements PluginMessageListener {
     private long lastUpdate;
     private BukkitTask updater;
 
-    private Map<String, HostData> hosts = new HashMap<String, HostData>();
+    private Map<String, HostData> hosts = new HashMap<>();
     private Host host;
 
     public HostManager(zServers plugin) {
