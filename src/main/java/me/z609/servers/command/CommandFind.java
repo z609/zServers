@@ -1,6 +1,5 @@
 package me.z609.servers.command;
 
-import me.z609.servers.Callback;
 import me.z609.servers.mojang.MojangProfile;
 import me.z609.servers.zServers;
 import org.bukkit.ChatColor;
@@ -27,11 +26,8 @@ public class CommandFind implements CommandExecutor {
         }
 
         MojangProfile profile = plugin.getMojangAPI().getProfile(args[0]);
-        String location = plugin.getRedisBridge().connect(new Callback<String, Jedis>() {
-            @Override
-            public String callback(Jedis jedis) {
-                return jedis.hget("onlinePlayers", profile.getUniqueId().toString());
-            }
+        String location = plugin.getRedisBridge().connect(jedis -> {
+            return jedis.hget("onlinePlayers", profile.getUniqueId().toString());
         });
 
         if (location == null) {

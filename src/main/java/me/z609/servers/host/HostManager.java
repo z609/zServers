@@ -2,7 +2,6 @@ package me.z609.servers.host;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import me.z609.servers.Callback;
 import me.z609.servers.redis.RedisSubscriber;
 import me.z609.servers.server.zServerData;
 import me.z609.servers.zServers;
@@ -41,12 +40,7 @@ public class HostManager implements PluginMessageListener {
         }
 
         updateHosts();
-        this.updater = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                updateHosts();
-            }
-        }, 2*20, 2*20);
+        this.updater = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::updateHosts, 40, 40); //2*20=40
         plugin.getRedisBridge().getSubscriberManager().subscribe(new RedisSubscriber("transferRequest:" + host.getName()) {
             @Override
             public void onMessageReceived(String[] message) {
@@ -66,26 +60,24 @@ public class HostManager implements PluginMessageListener {
     private void updateHosts() {
         lastUpdate = System.currentTimeMillis();
 
-        hosts = plugin.getRedisBridge().connect(new Callback<Map<String, HostData>, Jedis>() {
-            @Override
-            public Map<String, HostData> callback(Jedis jedis) {
-                Set<String> hostNames = jedis.smembers("hosts");
-                Map<String, HostData> hosts = new HashMap<String, HostData>();
-
-                for(String name : hostNames){
-                    HostData host = loadHost(jedis, name);
-                    if(host != null) {
-                        if(host.equals(HostManager.this.host)){
-                            HostManager.this.host.updateData(host);
-                        }
-                        hosts.put(name, host);
+        hosts = plugin.getRedisBridge().connect(jedis -> {
+            Set<String> hostNames = jedis.smembers("hosts");
+            Map<String, HostData> hosts = new HashMap<>();
+            
+            for (String name : hostNames) {
+                HostData host = loadHost(jedis, name);
+                if (host != null) {
+                    //noinspection EqualsBetweenInconvertibleTypes
+                    if (host.equals(HostManager.this.host)) {
+                        HostManager.this.host.updateData(host);
                     }
+                    hosts.put(name, host);
                 }
-
-                host.sendHeartbeat(jedis);
-
-                return hosts;
             }
+            
+            host.sendHeartbeat(jedis);
+            
+            return hosts;
         });
     }
 
@@ -144,16 +136,13 @@ public class HostManager implements PluginMessageListener {
         fields.put("players", Host.encapsulatePlayerNames(plugin.getServer()));
         fields.put("online", "true");
 
-        return plugin.getRedisBridge().connect(new Callback<Boolean, Jedis>() {
-            @Override
-            public Boolean callback(Jedis jedis) {
-                jedis.hmset(key, fields);
-                boolean added = (jedis.sadd("hosts", host.getName()) == 1);
-                if(added){
-                    plugin.getRedisBridge().sendMessage("hosts", "add", host.getName());
-                }
-                return added;
+        return plugin.getRedisBridge().connect(jedis -> {
+            jedis.hmset(key, fields);
+            boolean added = jedis.sadd("hosts", host.getName()) == 1;
+            if (added) {
+                plugin.getRedisBridge().sendMessage("hosts", "add", host.getName());
             }
+            return added;
         });
     }
 

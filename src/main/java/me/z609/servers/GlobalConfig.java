@@ -1,7 +1,5 @@
 package me.z609.servers;
 
-import redis.clients.jedis.Jedis;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,22 +15,14 @@ public class GlobalConfig {
         this.plugin = plugin;
 
         updateConfig();
-        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                updateConfig();
-            }
-        }, 60*20, 60*20);
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::updateConfig, 1200, 1200); //60*20=1200
     }
 
     private void updateConfig(){
-        plugin.getRedisBridge().connect(new CallbackRun<Jedis>() {
-            @Override
-            public void callback(Jedis jedis) {
-                GlobalConfig.this.config = jedis.hgetAll("global-config");
-                GlobalConfig.this.fallbackGroup = config.getOrDefault("fallbackGroup", "Hub");
-                GlobalConfig.this.networkName = config.getOrDefault("networkName", "Another zServers Network");
-            }
+        plugin.getRedisBridge().connect(jedis -> {
+            GlobalConfig.this.config = jedis.hgetAll("global-config");
+            GlobalConfig.this.fallbackGroup = config.getOrDefault("fallbackGroup", "Hub");
+            GlobalConfig.this.networkName = config.getOrDefault("networkName", "Another zServers Network");
         });
     }
 

@@ -1,6 +1,5 @@
 package me.z609.servers.redis;
 
-import me.z609.servers.Callback;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
@@ -48,11 +47,8 @@ public class RedisSubscriberManager {
 
     public long sendMessage(String channel, String... messages){
         final String message = String.join("\u001F", messages);
-        return bridge.connect(new Callback<Long, Jedis>() {
-            @Override
-            public Long callback(Jedis jedis) {
-                return jedis.publish(channel, message);
-            }
+        return bridge.connect(jedis -> {
+            return jedis.publish(channel, message);
         });
     }
 

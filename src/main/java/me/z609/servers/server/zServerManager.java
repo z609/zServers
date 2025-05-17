@@ -1,6 +1,5 @@
 package me.z609.servers.server;
 
-import me.z609.servers.CallbackRun;
 import me.z609.servers.host.Host;
 import me.z609.servers.host.HostData;
 import me.z609.servers.redis.RedisSubscriber;
@@ -17,7 +16,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
@@ -85,27 +83,22 @@ public class zServerManager {
             updateModulesContainer(template);
         }
 
-        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                updateAllServers();
-                if(System.currentTimeMillis() - lastOrchestration > 5000){
-                    lastOrchestration = System.currentTimeMillis();
-                    updateTemplates();
-                    for(zServerTemplate template : templates)
-                        orchestrateTemplate(template);
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            updateAllServers();
+            if(System.currentTimeMillis() - lastOrchestration > 5000){
+                lastOrchestration = System.currentTimeMillis();
+                updateTemplates();
+                for(zServerTemplate template : templates) {
+                    orchestrateTemplate(template);
                 }
             }
-        }, 2*20, 2*20);
-        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                updateAllWorlds();
-                for(zServerTemplate template : templates){
-                    updateModulesContainer(template);
-                }
+        }, 40, 40); //2*20=40
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            updateAllWorlds();
+            for(zServerTemplate template : templates){
+                updateModulesContainer(template);
             }
-        }, 5*20, 5*20);
+        }, 100, 100); //5*20=100
     }
 
     public void close(){
@@ -120,111 +113,101 @@ public class zServerManager {
     }
 
     private void updateAllServers() {
-        plugin.getRedisBridge().connect(new CallbackRun<Jedis>() {
-            @Override
-            public void callback(Jedis jedis) {
-                // Get ALL data of ALL servers in the network - so we can refer to any of them at any time.
-                Set<String> serverNames = jedis.smembers("servers");
-                Set<zServerData> remove = new HashSet<>();
-                int lost = 0;
-
-                for(String name : serverNames){
-
-                    zServerData data = loadServer(jedis, name); // This will load and update all in one.
-
-                    // Host data for old data cleanup.
-                    HostData host = data.getHost();
-
-                    // Since the server is loaded in Redis, and we typically clean up,
-                    // we'll go based off if the host is actually online or not.
-                    boolean online = host != null && host.isOnline();
-
-                    // If the host is online & local.
-                    if(online && host.equals(plugin.getHost().getData())){
-                        // It is supposedly on this host.
-                        // So, we will check if it is online here locally.
-                        // If it isn't, we know this is old, uncleaned data.
-
-                        zServer server = getLocalServer(data);
-                        if(server == null){
-                            // The server is from a previous time this host was hosting this server, and wasn't cleaned up properly.
-                            // "Orphaned" server. Since it's not being hosted right now, but still "on this host" we have to treat it
-                            // like it is a remote server, and remove it from Redis only. After removal, it should restart by
-                            // orchestration automatically if needed. (The reason these checks are so important is so the orchestrator
-                            // will not count it as an active server - without removing this, the server will be added to the count
-                            // and we won't have enough running servers. Additionally, players will be able to connect to a server
-                            // that doesn't exist, and *that don't make no damn sense*.
-
-                            // Orchestrator will restart this server if it's necessary.
-                            online = false;
-                        }
-                    }
-                    // There is no logic here for an else block, either, because if the host is offline and the server is marked
-                    // online, then obviously the server is there when the host shouldn't be.
-
-                    if(!online){
-                        // Offline, we must remove it.
-                        remove.add(data);
+        plugin.getRedisBridge().connect(jedis -> {
+            // Get ALL data of ALL servers in the network - so we can refer to any of them at any time.
+            Set<String> serverNames = jedis.smembers("servers");
+            Set<zServerData> remove = new HashSet<>();
+            int lost = 0;
+            
+            for (String name : serverNames) {
+                
+                zServerData data = loadServer(jedis, name); // This will load and update all in one.
+                
+                // Host data for old data cleanup.
+                HostData host = data.getHost();
+                
+                // Since the server is loaded in Redis, and we typically clean up,
+                // we'll go based off if the host is actually online or not.
+                boolean online = host != null && host.isOnline();
+                
+                // If the host is online & local.
+                if (online && host.equals(plugin.getHost().getData())) {
+                    // It is supposedly on this host.
+                    // So, we will check if it is online here locally.
+                    // If it isn't, we know this is old, uncleaned data.
+                    
+                    zServer server = getLocalServer(data);
+                    if (server == null) {
+                        // The server is from a previous time this host was hosting this server, and wasn't cleaned up properly.
+                        // "Orphaned" server. Since it's not being hosted right now, but still "on this host" we have to treat it
+                        // like it is a remote server, and remove it from Redis only. After removal, it should restart by
+                        // orchestration automatically if needed. (The reason these checks are so important is so the orchestrator
+                        // will not count it as an active server - without removing this, the server will be added to the count
+                        // and we won't have enough running servers. Additionally, players will be able to connect to a server
+                        // that doesn't exist, and *that don't make no damn sense*.
+                        
+                        // Orchestrator will restart this server if it's necessary.
+                        online = false;
                     }
                 }
-
-                {
-                    Iterator<zServer> iterator = zServerManager.this.servers.values().iterator();
-                    while(iterator.hasNext()){
-                        zServer server = iterator.next();
-                        if(!serverNames.contains(server.getName())) {
-                            iterator.remove();
-                            continue;
-                        }
-                        server.updateServer(jedis);
-                    }
+                // There is no logic here for an else block, either, because if the host is offline and the server is marked
+                // online, then obviously the server is there when the host shouldn't be.
+                
+                if (!online) {
+                    // Offline, we must remove it.
+                    remove.add(data);
                 }
-                {
-                    Iterator<zServerData> iterator = zServerManager.this.allServers.iterator();
-                    while(iterator.hasNext()){
-                        zServerData server = iterator.next();
-                        if(!serverNames.contains(server.getName())) {
-                            iterator.remove();
-                            lost++;
-                        }
+            }
+            
+            {
+                Iterator<zServer> iterator = zServerManager.this.servers.values().iterator();
+                while (iterator.hasNext()) {
+                    zServer server = iterator.next();
+                    if (!serverNames.contains(server.getName())) {
+                        iterator.remove();
+                        continue;
                     }
+                    server.updateServer(jedis);
                 }
-
-                if(!remove.isEmpty()){
-                    Pipeline pipeline = jedis.pipelined();
-                    for (zServerData removing : remove) {
-                        pipeline.del("server:" + removing.getName());
-                        pipeline.srem("servers", removing.getName());
-                        allServers.remove(removing);
-                    }
-                    pipeline.sync();
+            }
+            Iterator<zServerData> iterator = zServerManager.this.allServers.iterator();
+            while (iterator.hasNext()) {
+                zServerData server = iterator.next();
+                if (!serverNames.contains(server.getName())) {
+                    iterator.remove();
+                    lost++;
                 }
-                if(!remove.isEmpty() || lost > 0)
-                    plugin.getLogger().info("[Removed Servers] Cleaned up " + (remove.size() + lost) + " servers.");
+            }
+            
+            if (!remove.isEmpty()) {
+                Pipeline pipeline = jedis.pipelined();
+                for (zServerData removing : remove) {
+                    pipeline.del("server:" + removing.getName());
+                    pipeline.srem("servers", removing.getName());
+                    allServers.remove(removing);
+                }
+                pipeline.sync();
+            }
+            if (!remove.isEmpty() || lost > 0) {
+                plugin.getLogger().info("[Removed Servers] Cleaned up " + (remove.size() + lost) + " servers.");
             }
         });
     }
 
     private void updateAllWorlds() {
-        plugin.getRedisBridge().connect(new CallbackRun<Jedis>() {
-            @Override
-            public void callback(Jedis jedis) {
-                // This will load all worlds from Redis into memory.
-                Set<String> worldNames = jedis.smembers("worlds");
-                for(String name : worldNames){
-                    // Get the existing object and update, or create new one and initialize it.
-                    zWorldData data = availableWorlds.getOrDefault(name, new zWorldData(zServerManager.this, name));
-                    data.update(jedis);
-
-                    // If it wasn't in there (fell back to default), this should put it in there only if it is absent.
-                    availableWorlds.putIfAbsent(name, data);
-                }
-
-                Iterator<String> iterator = availableWorlds.keySet().iterator();
-                while(iterator.hasNext())
-                    if(!worldNames.contains(iterator.next()))
-                        iterator.remove();
+        plugin.getRedisBridge().connect(jedis -> {
+            // This will load all worlds from Redis into memory.
+            Set<String> worldNames = jedis.smembers("worlds");
+            for (String name : worldNames) {
+                // Get the existing object and update, or create new one and initialize it.
+                zWorldData data = availableWorlds.getOrDefault(name, new zWorldData(zServerManager.this, name));
+                data.update(jedis);
+                
+                // If it wasn't in there (fell back to default), this should put it in there only if it is absent.
+                availableWorlds.putIfAbsent(name, data);
             }
+            
+            availableWorlds.keySet().removeIf(s -> !worldNames.contains(s));
         });
     }
 
@@ -328,13 +311,10 @@ public class zServerManager {
         zServer server = new zServer(this, data);
         servers.put(data.getName(), server);
         allServers.add(data);
-        plugin.getRedisBridge().connect(new CallbackRun<Jedis>() {
-            @Override
-            public void callback(Jedis jedis) {
-                server.updateServer(jedis);
-                server.startup();
-                plugin.getRedisBridge().sendMessage("servers:added", server.getName());
-            }
+        plugin.getRedisBridge().connect(jedis -> {
+            server.updateServer(jedis);
+            server.startup();
+            plugin.getRedisBridge().sendMessage("servers:added", server.getName());
         });
         return server;
     }
@@ -359,30 +339,27 @@ public class zServerManager {
     }
 
     private void updateTemplates(){
-        plugin.getRedisBridge().connect(new CallbackRun<Jedis>() {
-            @Override
-            public void callback(Jedis jedis) {
-                Set<String> templateNames = jedis.smembers("templates");
-                Set<zServerTemplate> templates = new HashSet<>();
-                for(String name : templateNames){
-                    zServerTemplate loaded = getTemplateByName(name);
-                    Map<String, String> templateData = jedis.hgetAll("template:" + name);
-                    if(loaded != null){
-                        loaded.updateData(templateData);
-                        continue;
-                    }
-
-                    loaded = new zServerTemplate(zServerManager.this, name, templateData);
-                    zServerManager.this.templates.add(loaded);
+        plugin.getRedisBridge().connect(jedis -> {
+            Set<String> templateNames = jedis.smembers("templates");
+            Set<zServerTemplate> templates = new HashSet<>();
+            for (String name : templateNames) {
+                zServerTemplate loaded = getTemplateByName(name);
+                Map<String, String> templateData = jedis.hgetAll("template:" + name);
+                if (loaded != null) {
+                    loaded.updateData(templateData);
+                    continue;
                 }
-
-                Iterator<zServerTemplate> iterator = zServerManager.this.templates.iterator();
-                while (iterator.hasNext()) {
-                    zServerTemplate template = iterator.next();
-                    if (!templateNames.contains(template.getName())) {
-                        template.remove();
-                        iterator.remove();
-                    }
+                
+                loaded = new zServerTemplate(zServerManager.this, name, templateData);
+                zServerManager.this.templates.add(loaded);
+            }
+            
+            Iterator<zServerTemplate> iterator = zServerManager.this.templates.iterator();
+            while (iterator.hasNext()) {
+                zServerTemplate template = iterator.next();
+                if (!templateNames.contains(template.getName())) {
+                    template.remove();
+                    iterator.remove();
                 }
             }
         });
@@ -599,12 +576,7 @@ public class zServerManager {
         }
 
         Set<File> remove = new HashSet<>();
-        File[] files = container.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return !file.isDirectory() && file.getName().endsWith(".jar");
-            }
-        });
+        File[] files = container.listFiles(file -> !file.isDirectory() && file.getName().endsWith(".jar"));
         for(File file : files){
             if(!modules.contains(file.getName())){
                 remove.add(file);

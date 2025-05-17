@@ -148,21 +148,19 @@ public class zServer implements Listener {
             loadModule(module);
         }
 
-        CallbackRun<zWorld> callback = new CallbackRun<zWorld>() {
-            @Override
-            public void callback(zWorld zWorld) {
-                if(zServer.this.worlds.size() == zServer.this.data.getTemplate().getWorlds().length + 1){
-                    manager.updateMaxPlayerCount();
-
-                    List<zModule> sortedModules = topologicalSortModules(modules);
-                    for(zModule module : sortedModules)
-                        enableModule(module);
-                    bukkitBridge = new BukkitBridge(zServer.this).register();
-
-                    logInfo("Successfully started server! (" +
-                            new DecimalFormat("#.###").format((System.currentTimeMillis() - started) / 1000L) + "s)");
-                    started();
+        CallbackRun<zWorld> callback = zWorld -> {
+            if (zServer.this.worlds.size() == zServer.this.data.getTemplate().getWorlds().length + 1) {
+                manager.updateMaxPlayerCount();
+                
+                List<zModule> sortedModules1 = topologicalSortModules(modules);
+                for (zModule module : sortedModules1) {
+                    enableModule(module);
                 }
+                bukkitBridge = new BukkitBridge(zServer.this).register();
+                
+                logInfo("Successfully started server! (" +
+                        new DecimalFormat("#.###").format((System.currentTimeMillis() - started) / 1000L) + "s)");
+                started();
             }
         };
 
@@ -378,12 +376,9 @@ public class zServer implements Listener {
     private void removeServer(){
         final String key = "server:" + data.getName();
 
-        plugin.getRedisBridge().connect(new CallbackRun<Jedis>(){
-            @Override
-            public void callback(Jedis jedis) {
-                jedis.del("server:" + data.getName());
-                jedis.srem("servers", data.getName());
-            }
+        plugin.getRedisBridge().connect(jedis -> {
+            jedis.del("server:" + data.getName());
+            jedis.srem("servers", data.getName());
         });
     }
 
@@ -398,19 +393,11 @@ public class zServer implements Listener {
     public void setBusy(final boolean busy) {
         this.busy = busy;
         // Since this can be delayed when auto-assigning servers, update this ahead of the update tick.
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                plugin.getRedisBridge().connect(new CallbackRun<Jedis>() {
-                    @Override
-                    public void callback(Jedis jedis) {
-                        jedis.hset("server:" + zServer.this.data.getName(), "busy", String.valueOf(busy));
-                        plugin.getRedisBridge().getSubscriberManager()
-                                .sendMessage("servers:busy", zServer.this.data.getName(), String.valueOf(busy));
-                    }
-                });
-            }
-        });
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.getRedisBridge().connect(jedis -> {
+            jedis.hset("server:" + zServer.this.data.getName(), "busy", String.valueOf(busy));
+            plugin.getRedisBridge().getSubscriberManager()
+                    .sendMessage("servers:busy", zServer.this.data.getName(), String.valueOf(busy));
+        }));
     }
 
     public boolean isEmpty(){

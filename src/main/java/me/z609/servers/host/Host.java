@@ -1,6 +1,5 @@
 package me.z609.servers.host;
 
-import me.z609.servers.CallbackRun;
 import me.z609.servers.zServers;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -35,11 +34,8 @@ public class Host {
     }
 
     public void shutdown(){
-        plugin.getRedisBridge().connect(new CallbackRun<Jedis>() {
-            @Override
-            public void callback(Jedis jedis) {
-                jedis.hset("host:" + data.getName(), "online", "false");
-            }
+        plugin.getRedisBridge().connect(jedis -> {
+            jedis.hset("host:" + data.getName(), "online", "false");
         });
     }
 
