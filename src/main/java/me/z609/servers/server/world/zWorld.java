@@ -193,10 +193,16 @@ public class zWorld {
     }
 
     private void extractIfNeeded(File zipFile, File destinationDir, CallbackRun<zWorld> callback) {
-        if (destinationDir.exists() && isSaved()) {
-            server.logInfo("World folder already exists, skipping extraction: " + destinationDir.getPath());
-            callback.callback(this);
-            return;
+        if (destinationDir.exists()) {
+            if(isSaved()){
+                server.logInfo("World folder already exists, skipping extraction: " + destinationDir.getPath());
+                callback.callback(this);
+                return;
+            }
+            else{
+                // Delete files - they shouldn't be here.
+                server.deleteWorldContainer(destinationDir.getName());
+            }
         }
 
         try {

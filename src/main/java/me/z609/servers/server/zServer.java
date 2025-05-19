@@ -803,28 +803,32 @@ public class zServer implements Listener {
 
         plugin.getServer().unloadWorld(world.getWorld(), save);
 
-        if(!save){
-            // Cleanup and delete (to prevent weird corruption if the namespace is used again)
-            File container = new File(plugin.getServer().getWorldContainer(), world.getBukkitName());
-            if(container.exists() && container.isDirectory()){
-                try {
-                    Files.walk(container.toPath())
-                            .sorted(Comparator.reverseOrder()) // delete files before directories
-                            .forEach(p -> {
-                                try {
-                                    Files.delete(p);
-                                } catch (IOException e) {
-                                    plugin.getLogger().warning("Failed to delete: " + p + " - " + e.getMessage());
-                                }
-                            });
-                } catch (IOException e) {
-                    logWarning("Warning - The world " + world.getName() + " found at " + container.getAbsolutePath() +
-                            " could not be deleted: " + e.getMessage());
-                    e.printStackTrace();
-                }
+        // Cleanup and delete (to prevent weird corruption if the namespace is used again)
+        if(!save)
+            deleteWorldContainer(world.getBukkitName());
+        return true;
+    }
+
+    public void deleteWorldContainer(String name){
+        File container = new File(plugin.getServer().getWorldContainer(), name);
+        if(container.exists() && container.isDirectory()){
+            try {
+                Files.walk(container.toPath())
+                        .sorted(Comparator.reverseOrder()) // delete files before directories
+                        .forEach(p -> {
+                            try {
+                                Files.delete(p);
+                            } catch (IOException e) {
+                                plugin.getLogger().warning("Failed to delete: " + p + " - " + e.getMessage());
+                            }
+                        });
+                logInfo("Deleted world container " + name + " [success]");
+            } catch (IOException e) {
+                logWarning("Warning - The world " + name + " found at " + container.getAbsolutePath() +
+                        " could not be deleted: " + e.getMessage());
+                e.printStackTrace();
             }
         }
-        return true;
     }
 
     public void log(Level level, String... messages){
