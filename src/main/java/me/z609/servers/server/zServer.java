@@ -51,6 +51,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 
+@SuppressWarnings("ConstantExpression")
 public class zServer implements Listener {
 
     private zServers plugin;
@@ -1165,16 +1166,19 @@ public class zServer implements Listener {
     }
 
     public zWorld getWorld(World bukkitWorld){
-        for(zWorld world : worlds.values())
-            if(world.isWorld(bukkitWorld))
+        for(zWorld world : worlds.values()) {
+            if(world.isWorld(bukkitWorld)) {
                 return world;
+            }
+        }
         return null;
     }
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event){
-        if(!isWorld(event.getWorld()))
+        if(!isWorld(event.getWorld())) {
             return;
+        }
         zWorld world = getWorld(event.getWorld());
         event.setCancelled(world.isSpawnChunk(event.getChunk().getChunkSnapshot()));
     }
