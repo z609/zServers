@@ -39,7 +39,7 @@ public class zWorldData {
 
         this.friendlyName = data.containsKey("friendlyName") ? data.remove("friendlyName") : name;
         this.url = data.remove("url");
-        this.saved = Boolean.parseBoolean(data.getOrDefault("saved", String.valueOf(this.url != null)));
+        this.saved = Boolean.parseBoolean(data.getOrDefault("saved", String.valueOf(this.url == null)));
         data.remove("saved");
 
         this.spawnpoint = Coordinates.parse(data.remove("spawnpoint"));
