@@ -33,11 +33,12 @@ public abstract class zModule {
         onEnable();
     }
 
-    public void disable(){
+    public void disable(boolean update){
         if(!loaded || !enabled) {
             throw new IllegalStateException("zModule not enabled!");
         }
         enabled = false;
+        onDisable(update);
         onDisable();
     }
 
@@ -49,7 +50,12 @@ public abstract class zModule {
 
     }
 
+    @Deprecated
     public void onDisable(){
+
+    }
+
+    public void onDisable(boolean update){
 
     }
 

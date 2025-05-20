@@ -38,6 +38,8 @@ public class zServerManager {
 
     private long lastOrchestration;
 
+    private Map<zServerTemplate, Long> updateLock = new ConcurrentHashMap<>();
+
     public zServerManager(zServers plugin){
         this.plugin = plugin;
         this.globalModulesContainer = new File(plugin.getServer().getWorldContainer(), "modules");
@@ -539,8 +541,6 @@ public class zServerManager {
         return new File(getGlobalModulesContainer(), template.getName());
     }
 
-    private Map<zServerTemplate, Long> updateLock = new ConcurrentHashMap<>();
-
     private int updateModulesContainer(zServerTemplate template){
         if(updateLock.containsKey(template)) {
             return template.getModules().length;
@@ -553,18 +553,27 @@ public class zServerManager {
         List<String> modules = Arrays.asList(template.getModules());
         int updated = 0;
         for(String moduleName : modules){
-            File module = new File(container, moduleName);
             File global = getGlobalModule(moduleName);
+            if(!global.exists()) {
+                continue;
+            }
+            File module = new File(container, moduleName);
+
             boolean copyOver = true;
             if (module.exists()) {
-                copyOver = global.lastModified() > module.lastModified();
+                try {
+                    copyOver = !zServer.md5(module).equals(zServer.md5(global));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
             }
 
-            if(!copyOver || !global.exists()) {
+            if(!copyOver) {
                 continue;
             }
 
-            plugin.getLogger().info("[Global Deployment] Determined there to be a newer version for " + module + " in the global modules directory.");
+            plugin.getLogger().info("[Global Deployment] Determined there to be an updated version for " + module + " in the global modules directory.");
             try {
                 Files.copy(global.toPath(), module.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 updated++;
@@ -596,10 +605,10 @@ public class zServerManager {
             return modules.size();
         }
 
+        long start = updateLock.remove(template);
         if(updated > 0){
-            long updateStat = System.currentTimeMillis() - updateLock.remove(template);
             plugin.getLogger().info("[Global Deployment] Completed " + updated + " module update(s) " +
-                    "in " + new DecimalFormat("#.###").format(updateStat / 1000) + "s");
+                    "in " + new DecimalFormat("#.###").format((System.currentTimeMillis() - start) / 1000) + "s");
         }
 
         return modules.size();

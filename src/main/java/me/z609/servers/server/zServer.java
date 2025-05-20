@@ -15,6 +15,7 @@ import me.z609.servers.server.command.zServerCommandExecutor;
 import me.z609.servers.server.module.IllegalModuleDescriptionException;
 import me.z609.servers.server.module.zModule;
 import me.z609.servers.server.module.zModuleDescription;
+import me.z609.servers.server.module.zModuleRuntime;
 import me.z609.servers.server.world.zWorld;
 import me.z609.servers.server.world.zWorldData;
 import me.z609.servers.zServers;
@@ -37,13 +38,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,10 +60,16 @@ public class zServer implements Listener {
     private zServerManager manager;
     private zServerData data;
     private Map<UUID, Player> players = new HashMap<>();
-    private boolean busy;
+    private boolean busy, busyLock = false;
     private BukkitBridge bukkitBridge;
+
     private final File modulesContainer;
-    private URLClassLoader moduleClassLoader;
+
+    Map<String, zModule> modules = new HashMap<>();
+    Map<String, zModuleRuntime> moduleRuntimes = new HashMap<>();
+    URLClassLoader classLoader;
+    private zServerUpdateManager updateManager;
+
     private zServerRedisBridge redisBridge;
 
     private Map<zModule, Set<Listener>> listeners = new HashMap<>();
@@ -72,7 +80,6 @@ public class zServer implements Listener {
 
     private Map<String, zWorld> worlds = new ConcurrentHashMap<>();
     private Set<String> bukkitWorldNames = ConcurrentHashMap.newKeySet();
-    private Map<String, zModule> modules = new HashMap<>();
     private zWorld mainWorld;
 
     private final Set<UUID> invisiblePlayers = ConcurrentHashMap.newKeySet();
@@ -180,6 +187,8 @@ public class zServer implements Listener {
         for(zModule module : modules.values()) {
             module.start();
         }
+
+        this.updateManager = new zServerUpdateManager(this);
     }
 
     private List<zModule> topologicalSortModules(Map<String, zModule> modules) {
@@ -222,25 +231,40 @@ public class zServer implements Listener {
         sorted.add(module);
     }
 
-    private void loadModule(zModule module){
+    void loadModule(zModule module){
         zModuleDescription description = module.getDescription();
         logInfo("Loading zModule " + description.getName() + " v" + description.getVersion() + "...");
-        module.load();
-        logInfo("Loaded zModule " + description.getName() + "!");
+        try {
+            module.load();
+            logInfo("Loaded zModule " + description.getName() + "!");
+        } catch (Exception ex) {
+            logSevere("Exception thrown while loading zModule " + description.getName());
+            ex.printStackTrace();
+        }
     }
 
-    private void enableModule(zModule module){
+    void enableModule(zModule module){
         zModuleDescription description = module.getDescription();
         logInfo("Enabling zModule " + description.getName() + " v" + description.getVersion() + "...");
-        module.enable();
-        logInfo("Enabled zModule " + description.getName() + "!");
+        try {
+            module.enable();
+            logInfo("Enabled zModule " + description.getName() + "!");
+        } catch (Exception ex) {
+            logSevere("Exception thrown while enabling zModule " + description.getName());
+            ex.printStackTrace();
+        }
     }
 
-    private void disableModule(zModule module){
+    void disableModule(zModule module, boolean update) {
         zModuleDescription description = module.getDescription();
         logInfo("Disabling zModule " + description.getName() + " v" + description.getVersion() + "...");
-        unregisterAllListeners(module);
-        module.disable();
+        try {
+            unregisterAllListeners(module);
+            module.disable(update);
+        } catch (Exception ex) {
+            logSevere("Exception thrown while disabling zModule " + description.getName());
+            ex.printStackTrace();
+        }
         logInfo("Disabled zModule " + description.getName() + "!");
     }
 
@@ -283,68 +307,90 @@ public class zServer implements Listener {
         }
     }
 
-    private void startModuleManager(){
+    public URLClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    private void startModuleManager() {
         File[] jars = modulesContainer.listFiles(new JarFilter());
-        if(jars == null || jars.length == 0) {
-            return;
-        }
-        URL[] jarUrls = Arrays.stream(jars).map(file -> {
+        if (jars == null || jars.length == 0) return;
+
+        // Step 1: Sort jars by whether they're hot-swappable
+        List<File> hotSwapJars = new ArrayList<>();
+        List<File> globalJars = new ArrayList<>();
+
+        Map<File, zModuleDescription> descriptions = new HashMap<>();
+        for (File jar : jars) {
             try {
-                return file.toURI().toURL();
-            } catch (MalformedURLException ex) {
-                logSevere("[Module Loader] Could not load module \"" + file.getName() + "\": " + ex.getMessage());
-                return null;
-            }
-        }).filter(Objects::nonNull).toArray(URL[]::new);
+                zModuleDescription desc = zServer.retrieveModuleDescription(jar);
+                descriptions.put(jar, desc);
 
-        moduleClassLoader = new URLClassLoader(jarUrls, getClass().getClassLoader());
-        Set<zModule> modules = instantiateModules(jars);
-        for(zModule module : modules){
-            zModuleDescription description = module.getDescription();
-            String name = description.getName();
-            this.modules.put(name, module);
-        }
-    }
-
-    private Set<zModule> instantiateModules(File[] files) {
-        Set<zModule> modules = new HashSet<>();
-        if (files == null) {
-            return modules;
-        }
-
-        for (File file : files) {
-            try {
-                zModuleDescription description = retrieveModuleDescription(file);
-                zModule module = instantiateModule(description);
-                modules.add(module);
-            } catch (Exception ex) {
-                logSevere("[Module Loader] Could not load module \"" + file.getName() + "\": " + ex.getMessage());
-                ex.printStackTrace();
+                if (desc.isHotSwappable()) {
+                    hotSwapJars.add(jar);
+                } else {
+                    globalJars.add(jar);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("[Module Loader] Skipping invalid module jar: " + jar.getName());
             }
         }
 
-        return modules;
-    }
+        URL[] globalJarUrls = globalJars.stream().map(this::toURLSafe).toArray(URL[]::new);
+        this.classLoader = new URLClassLoader(globalJarUrls, getClass().getClassLoader());
 
-    private zModule instantiateModule(zModuleDescription description)
-            throws IllegalModuleDescriptionException,
-            ClassNotFoundException,
-            NoSuchMethodException,
-            InvocationTargetException,
-            InstantiationException,
-            IllegalAccessException {
-        Class<?> clazz = moduleClassLoader.loadClass(description.getMainClass());
-        if(!zModule.class.isAssignableFrom(clazz)) {
-            throw new IllegalModuleDescriptionException("Invalid module: Invalid `main` class path in module.yml - " +
-                    "not assignable from " + zModule.class.getName() + " (Is it up to date?)");
+        for (File jar : globalJars) {
+            zModuleDescription desc = descriptions.get(jar);
+            try {
+                zModuleRuntime runtime = new zModuleRuntime(this, jar, classLoader);
+                zModule module = runtime.load();
+                moduleRuntimes.put(desc.getName(), runtime);
+                modules.put(desc.getName(), module);
+
+                plugin.getLogger().info("[Module Loader] Loaded module: " + desc.getName());
+            } catch (Exception e) {
+                plugin.getLogger().severe("[Module Loader] Failed to load module " + desc.getName() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
         }
 
-        zModule module = (zModule) clazz.getDeclaredConstructor().newInstance();
-        module.hook(this, description);
-        return module;
+        if(!hotSwapJars.isEmpty()){
+            plugin.getLogger().info("[Module Loader] Found " + hotSwapJars.size() + " hot-swappable modules - THIS IS EXPERIMENTAL, and you should only do this " +
+                    "if you KNOW what you are doing programmatically.");
+            for (File jar : hotSwapJars) {
+                zModuleDescription desc = descriptions.get(jar);
+                try {
+                    zModuleRuntime runtime = new zModuleRuntime(this, jar);
+                    zModule module = runtime.load();
+                    moduleRuntimes.put(desc.getName(), runtime);
+                    modules.put(desc.getName(), module);
+
+                    plugin.getLogger().info("[Module Loader] Loaded module: " + desc.getName());
+                } catch (Exception e) {
+                    plugin.getLogger().severe("[Module Loader] Failed to load module " + desc.getName() + ": " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
     }
+
+    private URL toURLSafe(File file) {
+        try {
+            return file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Invalid module JAR path: " + file.getAbsolutePath(), e);
+        }
+    }
+
+
+
+    public File getJarForModule(zModule module) {
+        return moduleRuntimes.get(module.getDescription().getName()).getJar();
+    }
+
 
     void shutdown(){
+        this.updateManager.close();
+
         // Kick all players out to hub using a central method
         for(Player player : getOnlinePlayers()){
             zServerData fallback = plugin.getConnectionManager().getBestFallback();
@@ -363,7 +409,12 @@ public class zServer implements Listener {
         List<zModule> sortedModules = topologicalSortModules(modules);
         Collections.reverse(sortedModules);
         for(zModule module : sortedModules) {
-            disableModule(module);
+            try {
+                disableModule(module, false);
+            } catch (Exception e) {
+                plugin.getLogger().severe("[Module Loader] Failed to load module " + module.getDescription().getName() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
         }
         modules.clear(); // All modules should be disabled, and subsequently unloaded.
 
@@ -393,7 +444,15 @@ public class zServer implements Listener {
     }
 
     public void setBusy(final boolean busy) {
+        setBusy(busy, false);
+    }
+
+    void setBusy(final boolean busy, final boolean lock){
+        if(!lock && busyLock)
+            return;
         this.busy = busy;
+        if(lock)
+            this.busyLock = busy;
         // Since this can be delayed when auto-assigning servers, update this ahead of the update tick.
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.getRedisBridge().connect(jedis -> {
             jedis.hset("server:" + zServer.this.data.getName(), "busy", String.valueOf(busy));
@@ -1185,5 +1244,26 @@ public class zServer implements Listener {
         }
         zWorld world = getWorld(event.getWorld());
         event.setCancelled(world.isSpawnChunk(event.getChunk().getChunkSnapshot()));
+    }
+
+    public static String md5(File file) throws IOException, NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        try (InputStream is = Files.newInputStream(file.toPath())) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = is.read(buffer)) != -1) {
+                md.update(buffer, 0, read);
+            }
+        }
+        byte[] digest = md.digest();
+        StringBuilder sb = new StringBuilder();
+        for (byte b : digest) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
+    public zModuleRuntime getModuleRuntime(zModule module) {
+        return moduleRuntimes.get(module.getDescription().getName());
     }
 }
