@@ -558,13 +558,13 @@ public class zServerManager {
             boolean copyOver = true;
             if (module.exists()) {
                 copyOver = global.lastModified() > module.lastModified();
-                plugin.getLogger().info("[Global Deployment] Determined there to be a newer version for " + module + " in the global modules directory.");
             }
 
             if(!copyOver || !global.exists()) {
                 continue;
             }
 
+            plugin.getLogger().info("[Global Deployment] Determined there to be a newer version for " + module + " in the global modules directory.");
             try {
                 Files.copy(global.toPath(), module.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 updated++;
