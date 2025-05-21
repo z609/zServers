@@ -18,6 +18,7 @@ public class zServerData {
     private zServerTemplate template; // For getting default data
     Map<UUID, String> players = new HashMap<>();
     boolean busy;
+    boolean available;
 
     public zServerData(zServerManager manager, String host, String name, zServerTemplate template){
         this.manager = manager;
@@ -97,9 +98,14 @@ public class zServerData {
         return busy;
     }
 
+    public boolean isAvailable() {
+        return available;
+    }
+
     public void update(Map<String, String> data){
         this.players = Host.deEncapsulatePlayerNames(data.getOrDefault("players", ""));
         this.busy = Boolean.parseBoolean(data.getOrDefault("busy", "false"));
+        this.available = Boolean.parseBoolean(data.getOrDefault("available", "false"));
     }
 
     public int getMaxPlayers(){

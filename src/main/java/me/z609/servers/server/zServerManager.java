@@ -78,6 +78,18 @@ public class zServerManager {
                 }
             }
         });
+        plugin.getRedisBridge().getSubscriberManager().subscribe(new RedisSubscriber("servers:available") {
+            @Override
+            public void onMessageReceived(String[] message) {
+                if(message.length > 1){
+                    String serverName = message[0];
+                    zServerData data = getServerByName(serverName);
+                    if(data != null){
+                        data.available = Boolean.parseBoolean(message[1]);
+                    }
+                }
+            }
+        });
         plugin.getLogger().log(Level.INFO, "Now listening for busy states.");
         updateAllWorlds();
         plugin.getLogger().log(Level.INFO, "Loaded " + availableWorlds.size() + " pre-defined worlds into memory.");

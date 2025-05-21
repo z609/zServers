@@ -227,6 +227,9 @@ public class ConnectionManager implements Listener {
         if (!currentHost.equals(host)) {
             // Cross-host transfer (no join needed)
             zServer current = plugin.getServerManager().getServer(player);
+            if(!current.isAvailable()){
+                return null;
+            }
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.getRedisBridge().connect(jedis -> {
                 Map<String, String> update = new HashMap<>();
                 update.put("server", data.getName());
@@ -240,7 +243,7 @@ public class ConnectionManager implements Listener {
 
         // Local join (same host)
         zServer target = plugin.getServerManager().getLocalServer(data);
-        if (target == null) {
+        if (target == null || !target.isAvailable()) {
             player.kickPlayer(ChatColor.RED + "There are no servers to connect to at this time.");
             return data;
         }
@@ -305,6 +308,8 @@ public class ConnectionManager implements Listener {
             return data;
         }
         zServerData server = plugin.getServerManager().getServerByPlayer(player);
+        if(!server.isAvailable())
+            return null;
         HostData host = server.getHost();
         // Channel : transferRequest:hostName
         // Message: - playerName

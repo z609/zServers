@@ -253,8 +253,9 @@ public class zWorld {
         }
     }
 
-    public boolean unloadWorld(boolean save){
-        return server.closeWorld(this, save);
+    public boolean delete(boolean save){
+        spawnChunks.clear();
+        return plugin.getServer().unloadWorld(world, save);
     }
 
     public String getName() {

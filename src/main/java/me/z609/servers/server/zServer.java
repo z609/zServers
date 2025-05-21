@@ -82,6 +82,8 @@ public class zServer implements Listener {
     private Set<String> bukkitWorldNames = ConcurrentHashMap.newKeySet();
     private zWorld mainWorld;
 
+    private boolean available = false;
+
     private final Set<UUID> invisiblePlayers = ConcurrentHashMap.newKeySet();
 
     public zServer(zServerManager manager, zServerData data) {
@@ -115,6 +117,7 @@ public class zServer implements Listener {
         fields.put("heartbeat", String.valueOf(System.currentTimeMillis()));
         fields.put("players", Host.encapsulatePlayerNames(players.values()));
         fields.put("busy", String.valueOf(busy));
+        fields.put("available", String.valueOf(available));
 
         jedis.hmset(key, fields);
         boolean added = jedis.sadd("servers", data.getName()) == 1;
@@ -189,6 +192,7 @@ public class zServer implements Listener {
         }
 
         this.updateManager = new zServerUpdateManager(this);
+        setAvailable(true);
     }
 
     private List<zModule> topologicalSortModules(Map<String, zModule> modules) {
@@ -364,9 +368,9 @@ public class zServer implements Listener {
                     moduleRuntimes.put(desc.getName(), runtime);
                     modules.put(desc.getName(), module);
 
-                    plugin.getLogger().info("[Module Loader] Loaded module: " + desc.getName());
+                    plugin.getLogger().info("[Module Loader] Loaded hot-swap module: " + desc.getName());
                 } catch (Exception e) {
-                    plugin.getLogger().severe("[Module Loader] Failed to load module " + desc.getName() + ": " + e.getMessage());
+                    plugin.getLogger().severe("[Module Loader] Failed to load hot-swap module " + desc.getName() + ": " + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -389,12 +393,13 @@ public class zServer implements Listener {
 
 
     void shutdown(){
+        setAvailable(false);
         this.updateManager.close();
 
         // Kick all players out to hub using a central method
         for(Player player : getOnlinePlayers()){
             zServerData fallback = plugin.getConnectionManager().getBestFallback();
-            if(fallback == null){
+            if(fallback == null || fallback.isBusy()){
                 quit(player, null); // Call this and then kick fully - continue iteration.
                 player.kickPlayer(ChatColor.RED + "There are no servers to connect to at this time.");
                 continue;
@@ -458,6 +463,16 @@ public class zServer implements Listener {
             jedis.hset("server:" + zServer.this.data.getName(), "busy", String.valueOf(busy));
             plugin.getRedisBridge().getSubscriberManager()
                     .sendMessage("servers:busy", zServer.this.data.getName(), String.valueOf(busy));
+        }));
+    }
+
+    public void setAvailable(final boolean available){
+        this.available = available;
+        // Since this can be delayed when auto-assigning servers, update this ahead of the update tick.
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.getRedisBridge().connect(jedis -> {
+            jedis.hset("server:" + zServer.this.data.getName(), "available", String.valueOf(available));
+            plugin.getRedisBridge().getSubscriberManager()
+                    .sendMessage("servers:available", zServer.this.data.getName(), String.valueOf(available));
         }));
     }
 
@@ -860,7 +875,7 @@ public class zServer implements Listener {
         worlds.remove(world.getName()); // World name and key in the map should always be the same.
         bukkitWorldNames.remove(world.getBukkitName());
 
-        plugin.getServer().unloadWorld(world.getWorld(), save);
+        world.delete(save);
 
         // Cleanup and delete (to prevent weird corruption if the namespace is used again)
         if(!save)
@@ -1265,5 +1280,9 @@ public class zServer implements Listener {
 
     public zModuleRuntime getModuleRuntime(zModule module) {
         return moduleRuntimes.get(module.getDescription().getName());
+    }
+
+    public boolean isAvailable() {
+        return available;
     }
 }
