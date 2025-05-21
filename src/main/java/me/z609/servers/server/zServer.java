@@ -192,7 +192,7 @@ public class zServer implements Listener {
         }
 
         this.updateManager = new zServerUpdateManager(this);
-        setAvailable(true);
+        setAvailable(true, true);
     }
 
     private List<zModule> topologicalSortModules(Map<String, zModule> modules) {
@@ -393,7 +393,7 @@ public class zServer implements Listener {
 
 
     void shutdown(){
-        setAvailable(false);
+        setAvailable(false, !plugin.isShutdown());
         this.updateManager.close();
 
         // Kick all players out to hub using a central method
@@ -466,14 +466,18 @@ public class zServer implements Listener {
         }));
     }
 
-    public void setAvailable(final boolean available){
+    public void setAvailable(final boolean available, final boolean async){
         this.available = available;
         // Since this can be delayed when auto-assigning servers, update this ahead of the update tick.
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.getRedisBridge().connect(jedis -> {
+        Runnable runnable = () -> plugin.getRedisBridge().connect(jedis -> {
             jedis.hset("server:" + zServer.this.data.getName(), "available", String.valueOf(available));
             plugin.getRedisBridge().getSubscriberManager()
                     .sendMessage("servers:available", zServer.this.data.getName(), String.valueOf(available));
-        }));
+        });
+        if(async)
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+        else
+            runnable.run();
     }
 
     public boolean isEmpty(){
