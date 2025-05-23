@@ -63,7 +63,9 @@ public class BukkitBridge implements Listener {
         server.callEvent(zevent);
         if(!zevent.isCancelled()){
             if(zevent.getFormat() != null){
-                final String output = String.format(zevent.getFormat(), player.getDisplayName(), message);
+                String output = zevent.getOutput();
+                if(output == null)
+                    output = String.format(zevent.getFormat(), player.getDisplayName(), message);
                 for(Player recipient : zevent.getRecipients()){
                     recipient.sendMessage(output);
                 }

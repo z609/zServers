@@ -12,6 +12,7 @@ public class zPlayerChatEvent extends zServersPlayerEvent implements zServersCan
     private String message;
     private Set<Player> recipients;
     private String format = "<%1$s> %2$s";
+    private String output;
 
     public zPlayerChatEvent(zServer server, Player player, boolean cancelled, String message, Set<Player> recipients) {
         super(server, player);
@@ -42,6 +43,14 @@ public class zPlayerChatEvent extends zServersPlayerEvent implements zServersCan
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    public String getOutput() {
+        return output;
+    }
+
+    public void setOutput(String output) {
+        this.output = output;
     }
 
     @Override
