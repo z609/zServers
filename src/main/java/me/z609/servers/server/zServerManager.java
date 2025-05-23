@@ -30,11 +30,11 @@ public class zServerManager {
     private zServers plugin;
     private final File globalModulesContainer;
 
-    private Set<zServerTemplate> templates = new HashSet<>();
-    private Set<zServerData> allServers = new HashSet<>();
-    private Map<String, zServer> servers = new HashMap<>(); // servers on this host instance
-    private Map<String, zWorldData> availableWorlds = new HashMap<>();
-    private Map<String, zServerBundledCommand> bundledCommands = new HashMap<>();
+    private Set<zServerTemplate> templates = ConcurrentHashMap.newKeySet();
+    private Set<zServerData> allServers = ConcurrentHashMap.newKeySet();
+    private Map<String, zServer> servers = new ConcurrentHashMap<>(); // servers on this host instance
+    private Map<String, zWorldData> availableWorlds = new ConcurrentHashMap<>();
+    private Map<String, zServerBundledCommand> bundledCommands = new ConcurrentHashMap<>();
 
     private long lastOrchestration;
 

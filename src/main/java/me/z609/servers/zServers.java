@@ -19,6 +19,7 @@ public class zServers extends JavaPlugin {
 
     public static final Random RANDOM = new Random();
     private Configuration config;
+    private boolean shutdown = false;
 
     private RedisBridge redisBridge;
     private GlobalConfig globalConfig;
@@ -27,6 +28,7 @@ public class zServers extends JavaPlugin {
     private HostManager hostManager;
     private zServerManager serverManager;
     private ConnectionManager connectionManager;
+
 
     @Override
     public void onLoad() {
@@ -90,8 +92,13 @@ public class zServers extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        shutdown = true;
         serverManager.close();
         hostManager.shutdown();
+    }
+
+    public boolean isShutdown() {
+        return shutdown;
     }
 
     public RedisBridge getRedisBridge() {
