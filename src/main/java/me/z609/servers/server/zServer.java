@@ -26,6 +26,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -699,34 +700,38 @@ public class zServer implements Listener {
         Map<Class<? extends zServersEvent>, List<zEventExecutor<?>>> bindings = new HashMap<>();
 
         Class<?> clazz = listener.getClass();
+        List<HandlerEntry> entries = new ArrayList<>();
         while (clazz != null && zListener.class.isAssignableFrom(clazz)) {
             for (Method method : clazz.getDeclaredMethods()) {
-                if (!method.isAnnotationPresent(zEventHandler.class)) {
-                    continue;
-                }
-                if (method.getParameterCount() != 1) {
-                    continue;
-                }
+                if (!method.isAnnotationPresent(zEventHandler.class)) continue;
+                if (method.getParameterCount() != 1) continue;
 
                 Class<?> param = method.getParameterTypes()[0];
-                if (!zServersEvent.class.isAssignableFrom(param)) {
-                    continue;
-                }
+                if (!zServersEvent.class.isAssignableFrom(param)) continue;
+
+                Class<? extends zServersEvent> eventClass = (Class<? extends zServersEvent>) param;
+                zEventHandler annotation = method.getAnnotation(zEventHandler.class);
+                EventPriority priority = annotation.priority();
 
                 method.setAccessible(true);
-                Class<? extends zServersEvent> eventClass = (Class<? extends zServersEvent>) param;
-                
-                zEventExecutor<? extends zServersEvent> wrapper = event -> {
-                    try {
-                        method.invoke(listener, event);
-                    } catch (Exception e) {
-                        e.printStackTrace(); // Or log
-                    }
-                };
-                registerCustomListenerUnchecked(eventClass, wrapper);
-                bindings.computeIfAbsent(eventClass, k -> new ArrayList<>()).add(wrapper);
+                entries.add(new HandlerEntry(eventClass, priority, method));
             }
-            clazz = clazz.getSuperclass(); // Move up the hierarchy
+            clazz = clazz.getSuperclass();
+        }
+
+        entries.sort(Comparator.comparing(e -> e.priority.ordinal())); // LOWEST = 0, MONITOR = 5
+        Collections.reverse(entries); // now HIGHEST priority comes first
+
+        for (HandlerEntry entry : entries) {
+            zEventExecutor<? extends zServersEvent> wrapper = event -> {
+                try {
+                    entry.method.invoke(listener, event);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            };
+            registerCustomListenerUnchecked(entry.eventClass, wrapper);
+            bindings.computeIfAbsent(entry.eventClass, k -> new ArrayList<>()).add(wrapper);
         }
 
         listenerBindings.put((zListener) listener, bindings);
@@ -1318,4 +1323,17 @@ public class zServer implements Listener {
         if(permissions != null)
             permissions.remove();
     }
+
+    private static class HandlerEntry {
+        final Class<? extends zServersEvent> eventClass;
+        final EventPriority priority;
+        final Method method;
+
+        HandlerEntry(Class<? extends zServersEvent> eventClass, EventPriority priority, Method method) {
+            this.eventClass = eventClass;
+            this.priority = priority;
+            this.method = method;
+        }
+    }
+
 }
