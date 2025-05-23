@@ -30,6 +30,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import redis.clients.jedis.Jedis;
@@ -85,6 +86,8 @@ public class zServer implements Listener {
     private boolean available = false;
 
     private final Set<UUID> invisiblePlayers = ConcurrentHashMap.newKeySet();
+
+    private Map<Player, PermissionAttachment> permissions = new HashMap<>();
 
     public zServer(zServerManager manager, zServerData data) {
         this.manager = manager;
@@ -782,6 +785,7 @@ public class zServer implements Listener {
         zPlayerQuitEvent quit = new zPlayerQuitEvent(this, player, preTransferEvent, player.getName() + " quit.");
         callEvent(quit);
         players.remove(player.getUniqueId());
+        clearAllPermissions(player);
         updateVisiblePlayersFor(player);
         updateVisibilityFor(player, false);
         if(quit.getMessage() != null) {
@@ -1288,5 +1292,30 @@ public class zServer implements Listener {
 
     public boolean isAvailable() {
         return available;
+    }
+
+    public PermissionAttachment setPermission(Player player, boolean truth, String... nodes){
+        PermissionAttachment permission = this.permissions.computeIfAbsent(player, p -> p.addAttachment(plugin));
+
+        for (String node : nodes) {
+            if (node != null && !node.isEmpty()) {
+                permission.setPermission(node, truth);
+            }
+        }
+        return permission;
+    }
+
+    public PermissionAttachment addPermission(Player player, String... nodes){
+        return setPermission(player, true, nodes);
+    }
+
+    public PermissionAttachment removePermission(Player player, String... nodes){
+        return setPermission(player, false, nodes);
+    }
+
+    public void clearAllPermissions(Player player){
+        PermissionAttachment permissions = this.permissions.remove(player);
+        if(permissions != null)
+            permissions.remove();
     }
 }
