@@ -720,7 +720,6 @@ public class zServer implements Listener {
         }
 
         entries.sort(Comparator.comparing(e -> e.priority.ordinal())); // LOWEST = 0, MONITOR = 5
-        Collections.reverse(entries); // now HIGHEST priority comes first
 
         for (HandlerEntry entry : entries) {
             zEventExecutor<? extends zServersEvent> wrapper = event -> {
