@@ -51,6 +51,9 @@ publishing {
 tasks.named('shadowJar', ShadowJar) {
     archiveFileName = 'zServers.jar'
 }
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
 
 //tasks.compileJava.dependsOn(clean)
 tasks.jar.finalizedBy(shadowJar)
