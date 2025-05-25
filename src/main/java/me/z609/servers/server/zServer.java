@@ -620,7 +620,6 @@ public class zServer implements Listener {
                     "The spawnpoint for " + mainWorld.getName() + " is null - is the world even loaded?");
         }
 
-        resetPlayer(player, false);
         player.teleport(spawnpoint);
         if(join.getMessage() != null) {
             broadcastMessage(join.getMessage());
