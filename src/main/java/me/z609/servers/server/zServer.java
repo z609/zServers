@@ -563,16 +563,18 @@ public class zServer implements Listener {
             zAsyncPlayerPreloginEvent preloginEvent = new zAsyncPlayerPreloginEvent(this, player, newSession);
             callEvent(preloginEvent); // run async-safe listeners only
             plugin.getServer().getScheduler().runTask(plugin, () -> {
-                if (!preloginEvent.isCancelled()) {
-                    try {
-                        join(player, preTransferEvent, preloginEvent, newSession);
-                        handler.onSuccess();
-                    } catch (Exception e) {
-                        handler.onFailure(e);
+                if(player.isOnline()){
+                    if (!preloginEvent.isCancelled()) {
+                        try {
+                            join(player, preTransferEvent, preloginEvent, newSession);
+                            handler.onSuccess();
+                        } catch (Exception e) {
+                            handler.onFailure(e);
+                        }
                     }
-                }
-                else{
-                    handler.onCancelled(preloginEvent.getCancelReason());
+                    else{
+                        handler.onCancelled(preloginEvent.getCancelReason());
+                    }
                 }
             });
         });
