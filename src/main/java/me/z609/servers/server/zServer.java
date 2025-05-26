@@ -501,7 +501,7 @@ public class zServer implements Listener {
     }
 
     public boolean isOnline(Player player) {
-        return players.containsKey(player.getUniqueId());
+        return player.isOnline() && players.containsKey(player.getUniqueId());
     }
 
     /**
@@ -946,7 +946,7 @@ public class zServer implements Listener {
     }
 
     public boolean isHere(Player player){
-        return isHere(player.getLocation()) && isOnline(player);
+        return isOnline(player) && isHere(player.getLocation());
     }
 
     public boolean isHere(World world){
