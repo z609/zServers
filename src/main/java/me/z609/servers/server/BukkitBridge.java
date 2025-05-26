@@ -313,6 +313,21 @@ public class BukkitBridge implements Listener {
         event.setCancelled(zEvent.isCancelled());
     }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onExp(PlayerExpChangeEvent event){
+        if(!isHere(event.getPlayer()))
+            return;
+
+        zPlayerExpChangeEvent zEvent = new zPlayerExpChangeEvent(
+                server,
+                event.getPlayer(),
+                event.getAmount()
+        );
+
+        server.callEvent(zEvent);
+        event.setAmount(zEvent.getAmount());
+    }
+
     @EventHandler
     public void onFoodLevelChange(FoodLevelChangeEvent event){
         if(!(event.getEntity() instanceof Player player)) {
