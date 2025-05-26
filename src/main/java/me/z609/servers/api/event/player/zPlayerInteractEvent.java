@@ -80,6 +80,10 @@ public class zPlayerInteractEvent extends zServersPlayerEvent implements zServer
     }
 
     @Override public boolean isCancelled() { return cancelled; }
-    @Override public void setCancelled(boolean cancelled) { this.cancelled = cancelled; }
+    @Override public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+        this.useClickedBlock = cancelled ? Event.Result.DENY : Event.Result.ALLOW;
+        this.useItemInHand = cancelled ? Event.Result.DENY : Event.Result.ALLOW;
+    }
 }
 
