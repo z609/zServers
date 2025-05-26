@@ -788,11 +788,12 @@ public class zServer implements Listener {
 
     public void quit(Player player, zPlayerPreTransferEvent preTransferEvent){
         players.remove(player.getUniqueId());
-        zPlayerQuitEvent quit = new zPlayerQuitEvent(this, player, preTransferEvent, player.getName() + " quit.");
-        callEvent(quit);
         clearAllPermissions(player);
         updateVisiblePlayersFor(player);
         updateVisibilityFor(player, false);
+
+        zPlayerQuitEvent quit = new zPlayerQuitEvent(this, player, preTransferEvent, player.getName() + " quit.");
+        callEvent(quit);
         if(quit.getMessage() != null) {
             broadcastMessage(quit.getMessage());
         }
