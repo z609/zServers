@@ -1,5 +1,6 @@
 package me.z609.servers.server;
 
+import me.z609.servers.api.event.entity.zEntityDamageByEntityEvent;
 import me.z609.servers.api.event.entity.zEntityDamageEvent;
 import me.z609.servers.api.event.entity.zEntityDeathEvent;
 import me.z609.servers.api.event.player.*;
@@ -11,10 +12,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
@@ -152,13 +150,26 @@ public class BukkitBridge implements Listener {
             return;
         }
 
-        zEntityDamageEvent zEvent = new zEntityDamageEvent(
-                server,
-                event.getEntity(),
-                event.getCause(),
-                event.getDamage(),
-                event.isCancelled()
-        );
+        zEntityDamageEvent zEvent;
+        if(event instanceof EntityDamageByEntityEvent damageByEntityEvent){
+            zEvent = new zEntityDamageByEntityEvent(
+                    server,
+                    event.getEntity(),
+                    damageByEntityEvent.getDamager(),
+                    event.getCause(),
+                    event.getDamage(),
+                    event.isCancelled()
+            );
+        }
+        else{
+            zEvent = new zEntityDamageEvent(
+                    server,
+                    event.getEntity(),
+                    event.getCause(),
+                    event.getDamage(),
+                    event.isCancelled()
+            );
+        }
 
         server.callEvent(zEvent);
 
