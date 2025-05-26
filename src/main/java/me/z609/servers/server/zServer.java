@@ -671,7 +671,7 @@ public class zServer implements Listener {
 
     public void broadcastMessage(String... messages){
         for(String s : messages){
-            for(Player player : players.values()) {
+            for(Player player : getOnlinePlayers()) {
                 player.sendMessage(s);
             }
         }
@@ -787,9 +787,9 @@ public class zServer implements Listener {
     }
 
     public void quit(Player player, zPlayerPreTransferEvent preTransferEvent){
+        players.remove(player.getUniqueId());
         zPlayerQuitEvent quit = new zPlayerQuitEvent(this, player, preTransferEvent, player.getName() + " quit.");
         callEvent(quit);
-        players.remove(player.getUniqueId());
         clearAllPermissions(player);
         updateVisiblePlayersFor(player);
         updateVisibilityFor(player, false);
@@ -799,7 +799,7 @@ public class zServer implements Listener {
     }
 
     public Collection<Player> getOnlinePlayers() {
-        return Collections.unmodifiableCollection(players.values());
+        return players.values().stream().filter(Player::isOnline).toList();
     }
 
     public Collection<String> getPlayerNames(){
