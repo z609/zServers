@@ -21,9 +21,8 @@ public class zPlayerInteractEvent extends zServersPlayerEvent implements zServer
     private Event.Result useClickedBlock;
     private Event.Result useItemInHand;
     private EquipmentSlot hand;
-    private boolean cancelled;
 
-    public zPlayerInteractEvent(zServer server, Player player, Action action, ItemStack item, Block clickedBlock, BlockFace blockFace, Event.Result useClickedBlock, Event.Result useItemInHand, EquipmentSlot hand, boolean cancelled) {
+    public zPlayerInteractEvent(zServer server, Player player, Action action, ItemStack item, Block clickedBlock, BlockFace blockFace, Event.Result useClickedBlock, Event.Result useItemInHand, EquipmentSlot hand) {
         super(server, player);
         this.action = action;
         this.item = item;
@@ -32,7 +31,6 @@ public class zPlayerInteractEvent extends zServersPlayerEvent implements zServer
         this.useClickedBlock = useClickedBlock;
         this.useItemInHand = useItemInHand;
         this.hand = hand;
-        this.cancelled = cancelled;
     }
 
     public Action getAction() { return action; }
@@ -79,11 +77,26 @@ public class zPlayerInteractEvent extends zServersPlayerEvent implements zServer
         return this.hasItem() && this.item.getType().isBlock();
     }
 
-    @Override public boolean isCancelled() { return cancelled; }
-    @Override public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-        this.useClickedBlock = cancelled ? Event.Result.DENY : Event.Result.ALLOW;
-        this.useItemInHand = cancelled ? Event.Result.DENY : Event.Result.ALLOW;
+    @Override
+    public void setCancelled(boolean cancel) {
+        this.useClickedBlock = cancel
+                ? Event.Result.DENY
+                : (this.useClickedBlock == Event.Result.DENY ? Event.Result.DEFAULT : this.useClickedBlock);
+
+        this.useItemInHand = cancel
+                ? Event.Result.DENY
+                : (this.useItemInHand == Event.Result.DENY ? Event.Result.DEFAULT : this.useItemInHand);
     }
+
+    @Override
+    public boolean isCancelled() {
+        return this.useClickedBlock == Event.Result.DENY || this.useItemInHand == Event.Result.DENY;
+    }
+
+    public boolean hasExplicitAllow() {
+        return useClickedBlock == Event.Result.ALLOW || useItemInHand == Event.Result.ALLOW;
+    }
+
+
 }
 

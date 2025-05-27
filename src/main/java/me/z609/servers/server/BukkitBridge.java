@@ -212,14 +212,12 @@ public class BukkitBridge implements Listener {
                 event.getBlockFace(),
                 event.useInteractedBlock(),
                 event.useItemInHand(),
-                event.getHand(),
-                event.isCancelled()
+                event.getHand()
         );
 
         server.callEvent(zEvent);
         event.setUseInteractedBlock(zEvent.getUseClickedBlock());
         event.setUseItemInHand(zEvent.getUseItemInHand());
-        event.setCancelled(zEvent.isCancelled());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
