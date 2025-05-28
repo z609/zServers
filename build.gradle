@@ -29,6 +29,7 @@ version '0.1.0'
 dependencies {
 //    compileOnly 'org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT'
     compileOnly fileTree('lib') { include '*.jar' }
+    implementation files('lib/PacketWrapper-1.12.1.jar')
     compileOnly 'cloud.timo.timocloud:TimoCloud-API:6.7.9'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'redis.clients:jedis:5.2.0'
