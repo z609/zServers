@@ -678,16 +678,28 @@ public class zServer implements Listener {
         sendConsoleMessage(messages);
     }
 
-    public void callEvent(zServersEvent event){
-        List<zEventExecutor<? extends zServersEvent>> executors = customListeners.get(event.getClass());
-        if (executors != null) {
-            for (zEventExecutor<? extends zServersEvent> executor : new ArrayList<>(executors)) {
-                // Unsafe cast is okay since we validated class earlier
-                zEventExecutor<zServersEvent> safeExecutor = (zEventExecutor<zServersEvent>) executor;
-                safeExecutor.execute(event);
+    public void callEvent(zServersEvent event) {
+        Class<?> eventClass = event.getClass();
+        Set<zEventExecutor<zServersEvent>> allExecutors = new LinkedHashSet<>();
+
+        // Walk the class hierarchy and collect all matching executors
+        while (eventClass != null && zServersEvent.class.isAssignableFrom(eventClass)) {
+            List<zEventExecutor<? extends zServersEvent>> executors = customListeners.get(eventClass);
+            if (executors != null) {
+                // Cast is safe due to hierarchy check above
+                for (zEventExecutor<? extends zServersEvent> executor : executors) {
+                    allExecutors.add((zEventExecutor<zServersEvent>) executor);
+                }
             }
+            eventClass = eventClass.getSuperclass();
+        }
+
+        // Execute in order
+        for (zEventExecutor<zServersEvent> executor : allExecutors) {
+            executor.execute(event);
         }
     }
+
 
     public void registerListener(zModule module, Listener listener) {
         Set<Listener> listeners = this.listeners.computeIfAbsent(module, m -> new HashSet<>());
