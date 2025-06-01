@@ -10,6 +10,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class zBlockPlaceEvent extends zServersPlayerEvent implements zServersCancellableEvent {
+    private Block block;
     private boolean cancelled;
     private boolean canBuild;
     private EquipmentSlot hand;
@@ -17,15 +18,20 @@ public class zBlockPlaceEvent extends zServersPlayerEvent implements zServersCan
     private Block placedAgainst;
     private BlockState replacedBlockState;
 
-    public zBlockPlaceEvent(zServer server, Player player, boolean cancelled, boolean canBuild,
+    public zBlockPlaceEvent(zServer server, Player player, Block block, boolean cancelled, boolean canBuild,
                             EquipmentSlot hand, ItemStack itemInHand, Block placedAgainst, BlockState replacedBlockState) {
         super(server, player);
+        this.block = block;
         this.cancelled = cancelled;
         this.canBuild = canBuild;
         this.hand = hand;
         this.itemInHand = itemInHand;
         this.placedAgainst = placedAgainst;
         this.replacedBlockState = replacedBlockState;
+    }
+
+    public Block getBlock() {
+        return block;
     }
 
     public void setCanBuild(boolean canBuild) {
