@@ -399,7 +399,8 @@ public class zServer implements Listener {
 
     void shutdown(){
         setAvailable(false, !plugin.isShutdown());
-        this.updateManager.close();
+        if(updateManager != null)
+            this.updateManager.close();
 
         // Kick all players out to hub using a central method
         for(Player player : getOnlinePlayers()){
