@@ -383,35 +383,34 @@ public class zServerManager {
         Collection<zServerData> allGroupServers = getServersByGroup(template.getGroup());
 
         int totalServers = allGroupServers.size();
-        int requiredAvailable = template.getEmptyServers();
 
         int totalPlayers = allGroupServers.stream().mapToInt(zServerData::getPlayerCount).sum();
+        int available = (int) getServersByGroup(template.getGroup()).stream()
+                .filter(server -> !server.isBusy())
+                .count();
         int totalSlots = totalServers * template.getMaxPlayers();
         double utilization = totalSlots == 0 ? 0 : (double) totalPlayers / totalSlots;
 
         // === PHASE 1: SCALE DOWN EXTRA AVAILABLE SERVERS ===
-        while (true) {
+        while(available > template.getMinServers()){
             List<zServer> localAvailable = getLocalServersByGroup(template.getGroup()).stream()
-                    .filter(server -> !server.isBusy() && server.isEmpty())
+                    .filter(server -> !server.isBusy())
                     .sorted(Comparator.comparingInt(zServer::getNumber).reversed())
                     .toList();
-
-            if (localAvailable.size() <= requiredAvailable
-                    || totalServers <= template.getMinServers() + template.getEmptyServers()) {
-                break;
-            }
 
             zServer toStop = localAvailable.getFirst();
             stopServer(toStop);
             plugin.getLogger().info("Stopped server " + toStop.getName() + " as it was no longer needed.");
             totalServers--; // keep totalServers accurate in this context
+            available--;
         }
 
         // === PHASE 2: ENSURE MINIMUM SERVERS EXIST ===
-        while (totalServers < template.getMinServers()) {
+        while (available < template.getMinServers()) {
             if(!plugin.getCloud().isFull()){
                 if (isSpaceHere()) {
                     startServer(template);
+                    available++;
                     totalServers++;
                 } else {
                     plugin.getLogger().log(Level.WARNING,
@@ -428,19 +427,6 @@ public class zServerManager {
             }
         }
 
-        int localAvailable = (int) getLocalServersByGroup(template.getGroup()).stream()
-                .filter(server -> !server.isBusy() && server.isEmpty())
-                .count();
-
-        // === PHASE 3: CREATE BUFFER IF TOO FEW AVAILABLE SERVERS ===
-        if (localAvailable < requiredAvailable && isSpaceHere()) {
-            if (startServer(template) != null) { // You might want this to return a boolean
-                totalServers++;
-                localAvailable++; // <-- update this!
-                plugin.getLogger().info("Starting server to maintain available server buffer for group " + template.getGroup());
-            }
-        }
-
         // === PHASE 4: SCALE UP ON HIGH UTILIZATION ===
         if (utilization > template.getScaleUpBuffer() && isSpaceHere()) {
             startServer(template);
@@ -448,7 +434,7 @@ public class zServerManager {
         }
 
         // === PHASE 5: SCALE DOWN IF UNDERUTILIZED ===
-        if (utilization < 0.3 && totalServers > template.getMinServers() + 1 && localAvailable > requiredAvailable) {
+        if (utilization < 0.3 && totalServers > template.getMinServers() + 1) {
             Optional<zServer> lastAvailable = getLocalServersByGroup(template.getGroup()).stream()
                     .filter(server -> !server.isBusy()).max(Comparator.comparingInt(zServer::getNumber));
             lastAvailable.ifPresent(server -> {

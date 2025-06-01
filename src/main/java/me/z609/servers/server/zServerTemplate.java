@@ -56,6 +56,7 @@ public class zServerTemplate {
         return games;
     }
 
+    @Deprecated
     public int getEmptyServers() {
         return emptyServers;
     }
