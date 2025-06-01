@@ -554,12 +554,18 @@ public class zServer implements Listener {
             return;
         }
         if(localJoin){
-            player.teleport(mainWorld.getSpawnpoint());
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 255));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 255));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, -50));
-            player.setWalkSpeed(0.0F);
-            player.setFlySpeed(0.0F);
+            if(mainWorld != null){
+                player.teleport(mainWorld.getSpawnpoint());
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1000000, 255));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1000000, 255));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1000000, -50));
+                player.setWalkSpeed(0.0F);
+                player.setFlySpeed(0.0F);
+            }
+            else{
+                handler.onFailure(new IllegalStateException("The server world has not been loaded."));
+                return;
+            }
         }
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             zAsyncPlayerPreloginEvent preloginEvent = new zAsyncPlayerPreloginEvent(this, player, newSession);
