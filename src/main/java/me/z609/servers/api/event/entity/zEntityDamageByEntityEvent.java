@@ -6,8 +6,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class zEntityDamageByEntityEvent extends zEntityDamageEvent{
     private final Entity damager;
-    public zEntityDamageByEntityEvent(zServer server, Entity entity, Entity damager, EntityDamageEvent.DamageCause cause, double damage, boolean cancelled) {
-        super(server, entity, cause, damage, cancelled);
+    public zEntityDamageByEntityEvent(zServer server, Entity entity, Entity damager, EntityDamageEvent.DamageCause cause, double damage, double finalDamage, boolean cancelled) {
+        super(server, entity, cause, damage, finalDamage, cancelled);
         this.damager = damager;
     }
 

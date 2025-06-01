@@ -158,6 +158,7 @@ public class BukkitBridge implements Listener {
                     damageByEntityEvent.getDamager(),
                     event.getCause(),
                     event.getDamage(),
+                    event.getFinalDamage(),
                     event.isCancelled()
             );
         }
@@ -167,6 +168,7 @@ public class BukkitBridge implements Listener {
                     event.getEntity(),
                     event.getCause(),
                     event.getDamage(),
+                    event.getFinalDamage(),
                     event.isCancelled()
             );
         }

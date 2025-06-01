@@ -10,14 +10,16 @@ public class zEntityDamageEvent extends zServersEvent implements zServersCancell
 
     private final Entity entity;
     private final EntityDamageEvent.DamageCause cause;
+    private final double finalDamage;
     private double damage;
     private boolean cancelled;
 
-    public zEntityDamageEvent(zServer server, Entity entity, EntityDamageEvent.DamageCause cause, double damage, boolean cancelled) {
+    public zEntityDamageEvent(zServer server, Entity entity, EntityDamageEvent.DamageCause cause, double damage, double finalDamage, boolean cancelled) {
         super(server);
         this.entity = entity;
         this.cause = cause;
         this.damage = damage;
+        this.finalDamage = finalDamage;
         this.cancelled = cancelled;
     }
 
@@ -25,6 +27,10 @@ public class zEntityDamageEvent extends zServersEvent implements zServersCancell
     public EntityDamageEvent.DamageCause getCause() { return cause; }
     public double getDamage() { return damage; }
     public void setDamage(double damage) { this.damage = damage; }
+
+    public double getFinalDamage() {
+        return finalDamage;
+    }
 
     @Override public boolean isCancelled() { return cancelled; }
     @Override public void setCancelled(boolean cancelled) { this.cancelled = cancelled; }
