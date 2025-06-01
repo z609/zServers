@@ -117,7 +117,7 @@ public class BukkitBridge implements Listener {
         }
 
         zBlockBreakEvent zevent =
-                new zBlockBreakEvent(server, player, event.isCancelled(), event.isDropItems());
+                new zBlockBreakEvent(server, player, event.getBlock(), event.isCancelled(), event.isDropItems());
         server.callEvent(zevent);
         event.setCancelled(zevent.isCancelled());
         event.setDropItems(zevent.isDropItems());
@@ -133,6 +133,7 @@ public class BukkitBridge implements Listener {
         zBlockPlaceEvent zevent =
                 new zBlockPlaceEvent(server,
                         player,
+                        event.getBlock(),
                         event.isCancelled(),
                         event.canBuild(),
                         event.getHand(),
