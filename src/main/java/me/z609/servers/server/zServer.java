@@ -87,6 +87,7 @@ public class zServer implements Listener {
     private boolean available = false;
 
     private final Set<UUID> invisiblePlayers = ConcurrentHashMap.newKeySet();
+    private final Map<String, String> customServerData = new ConcurrentHashMap<>();
 
     private Map<Player, PermissionAttachment> permissions = new HashMap<>();
 
@@ -114,7 +115,7 @@ public class zServer implements Listener {
     boolean updateServer(Jedis jedis){
         final String key = "server:" + data.getName();
 
-        final Map<String, String> fields = new HashMap<>();
+        final Map<String, String> fields = new HashMap<>(customServerData);
         fields.put("name", data.getName());
         fields.put("template", data.getTemplate().getName());
         fields.put("host", data.getHostName());
@@ -1347,6 +1348,14 @@ public class zServer implements Listener {
             this.priority = priority;
             this.method = method;
         }
+    }
+
+    public void setCustomData(String key, String value){
+        customServerData.put(key, value);
+    }
+
+    public String getCustomData(String key){
+        return customServerData.get(key);
     }
 
 }

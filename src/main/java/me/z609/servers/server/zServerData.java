@@ -11,6 +11,7 @@ public class zServerData {
     private zServers plugin;
     private zServerManager manager;
 
+    private Map<String, String> data = new HashMap<>();
     private final String host;
     private final String name;
     private final String group;
@@ -103,9 +104,13 @@ public class zServerData {
     }
 
     public void update(Map<String, String> data){
+        this.data = data;
         this.players = Host.deEncapsulatePlayerNames(data.getOrDefault("players", ""));
+        data.remove("players");
         this.busy = Boolean.parseBoolean(data.getOrDefault("busy", "false"));
+        data.remove("busy");
         this.available = Boolean.parseBoolean(data.getOrDefault("available", "false"));
+        data.remove("available");
     }
 
     public int getMaxPlayers(){
@@ -114,6 +119,14 @@ public class zServerData {
 
     public boolean isFallbackServer(){
         return plugin.getGlobalConfig().getFallbackGroup().equals(group);
+    }
+
+    public Map<String, String> getData() {
+        return data;
+    }
+
+    public String getCustomData(String key){
+        return data.get(key);
     }
 
     @Override
