@@ -12,6 +12,7 @@ import me.z609.servers.host.Host;
 import me.z609.servers.server.command.bundled.zServerBundledCommand;
 import me.z609.servers.server.command.zServerCommand;
 import me.z609.servers.server.command.zServerCommandExecutor;
+import me.z609.servers.server.disguise.zServerDisguises;
 import me.z609.servers.server.module.IllegalModuleDescriptionException;
 import me.z609.servers.server.module.zModule;
 import me.z609.servers.server.module.zModuleDescription;
@@ -90,6 +91,7 @@ public class zServer implements Listener {
     private final Map<String, String> customServerData = new ConcurrentHashMap<>();
 
     private Map<Player, PermissionAttachment> permissions = new HashMap<>();
+    private zServerDisguises disguises;
 
     public zServer(zServerManager manager, zServerData data) {
         this.manager = manager;
@@ -137,6 +139,11 @@ public class zServer implements Listener {
 
         redisBridge = new zServerRedisBridge(this);
         logInfo("Redis Bridge with zServers has been initialized.");
+
+        disguises = new zServerDisguises(this);
+        if(disguises.isAvailable()){
+            disguises.enable();
+        }
 
         int loaded = 0;
         for(String bundledName : data.getTemplate().getBundledCommands()){
@@ -431,6 +438,9 @@ public class zServer implements Listener {
 
         bukkitBridge.unregister();
         HandlerList.unregisterAll(this);
+        if(disguises != null && disguises.isAvailable()){
+            disguises.disable();
+        }
 
         removeServer();
         manager.updateMaxPlayerCount();

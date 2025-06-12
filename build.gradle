@@ -15,6 +15,9 @@ repositories {
     maven {
         url = 'https://oss.sonatype.org/content/repositories/snapshots'
     }
+    maven {
+        url "https://repo.md-5.net/content/groups/public/"
+    }
 }
 
 processResources {
@@ -29,7 +32,9 @@ version '0.1.0'
 dependencies {
 //    compileOnly 'org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT'
     compileOnly fileTree('lib') { include '*.jar' }
+    implementation group: 'me.libraryaddict.disguises', name: 'libsdisguises', version: '11.0.0'
     implementation files('lib/PacketWrapper-1.12.1.jar')
+    implementation files('lib/LibsDisguises.jar')
     compileOnly 'cloud.timo.timocloud:TimoCloud-API:6.7.9'
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'redis.clients:jedis:5.2.0'

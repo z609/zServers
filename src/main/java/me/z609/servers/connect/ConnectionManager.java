@@ -176,6 +176,7 @@ public class ConnectionManager implements Listener {
 
         zPlayerPreTransferEvent preTransferEvent = null;
         if(!transferring.containsKey(uuid)){
+            server.logInfo(player.getName() + " has left the network (no transfer detected)");
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.getRedisBridge().connect(jedis -> {
                 jedis.del("onlinePlayers:" + uuid.toString());
             }));
