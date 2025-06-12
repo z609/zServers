@@ -2,7 +2,7 @@ name: zServers
 main: me.z609.servers.zServers
 version: 1.0
 description: Containerize each of your Minecraft server instances, including full modular support.
-softdepend: [TimoCloud,ViaVersion]
+softdepend: [TimoCloud,ViaVersion,ProtocolLib,LibsDisguises]
 authors: [z609]
 website: https://www.z609.me/zservers
 commands:
