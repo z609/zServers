@@ -1375,4 +1375,7 @@ public class zServer implements Listener {
         return customServerData.get(key);
     }
 
+    public zServerDisguises getDisguises() {
+        return disguises;
+    }
 }
