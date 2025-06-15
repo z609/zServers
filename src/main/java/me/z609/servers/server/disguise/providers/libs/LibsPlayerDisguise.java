@@ -14,7 +14,7 @@ public class LibsPlayerDisguise extends LibsDisguise implements zServerPlayerDis
     private final PlayerDisguise playerDisguise;
     private final WrappedGameProfile gameProfile;
 
-    public LibsPlayerDisguise(String name) {
+    LibsPlayerDisguise(String name) {
         super(new PlayerDisguise(name));
         this.playerDisguise = (PlayerDisguise)getDisguise();
 

@@ -5,6 +5,7 @@ import me.z609.servers.api.event.player.zPlayerQuitEvent;
 import me.z609.servers.server.zServer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -25,6 +26,8 @@ public interface DisguiseProvider<T extends DisguiseProvider<T>> {
     void removeCustomDisguise(String disguiseName);
     zServerDisguise<T> constructDisguise(Entity entity, boolean doEquipment, boolean displayExtraAnimations);
     zServerDisguise<T> constructDisguise(Entity entity);
+    zServerDisguise<T> buildDisguise(EntityType type);
+    zServerPlayerDisguise<T> buildPlayerDisguise(String name);
     void disguiseEntity(Entity entity, zServerDisguise<?> disguise);
     void disguiseEntity(CommandSender sender, Entity entity, zServerDisguise<?> disguise);
     void disguiseIgnorePlayers(Entity entity, zServerDisguise<?> disguise, Collection playersToNotSeeDisguise);

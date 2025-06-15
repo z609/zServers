@@ -8,9 +8,11 @@ import me.z609.servers.api.event.player.zPlayerJoinEvent;
 import me.z609.servers.api.event.player.zPlayerQuitEvent;
 import me.z609.servers.server.disguise.DisguiseProvider;
 import me.z609.servers.server.disguise.zServerDisguise;
+import me.z609.servers.server.disguise.zServerPlayerDisguise;
 import me.z609.servers.server.zServer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -91,6 +93,16 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
     @Override
     public zServerDisguise<zServerLibsDisguises> constructDisguise(Entity entity) {
         return LibsDisguise.asLibsDisguise(DisguiseAPI.constructDisguise(entity));
+    }
+
+    @Override
+    public zServerDisguise<zServerLibsDisguises> buildDisguise(EntityType type) {
+        return new LibsDisguise(type);
+    }
+
+    @Override
+    public zServerPlayerDisguise<zServerLibsDisguises> buildPlayerDisguise(String name) {
+        return new LibsPlayerDisguise(name);
     }
 
     @Override
