@@ -3,10 +3,14 @@ package me.z609.servers.server.disguise.providers.libs;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.LibsDisguises;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
+import me.libraryaddict.disguise.events.DisguiseEvent;
+import me.libraryaddict.disguise.events.UndisguiseEvent;
 import me.libraryaddict.disguise.utilities.parser.DisguiseParseException;
 import me.z609.servers.api.event.player.zPlayerJoinEvent;
 import me.z609.servers.api.event.player.zPlayerQuitEvent;
 import me.z609.servers.server.disguise.DisguiseProvider;
+import me.z609.servers.server.disguise.event.zServersDisguiseEvent;
+import me.z609.servers.server.disguise.event.zServersUndisguiseEvent;
 import me.z609.servers.server.disguise.zServerDisguise;
 import me.z609.servers.server.disguise.zServerPlayerDisguise;
 import me.z609.servers.server.zServer;
@@ -14,6 +18,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -197,5 +203,36 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
     @Override
     public void undisguiseToAll(CommandSender sender, Entity entity) {
         DisguiseAPI.undisguiseToAll(sender, entity);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onUndisguise(UndisguiseEvent event) {
+        Entity entity = event.getEntity();
+        zServer server = this.server.getManager().getServer(entity.getLocation());
+        if(entity instanceof Player player){
+            server = this.server.getManager().getServer(player);
+        }
+        if(server == null || !server.equals(this.server))
+            return;
+
+        zServerDisguise<zServerLibsDisguises> disguise = LibsDisguise.asLibsDisguise(event.getDisguise());
+        zServersUndisguiseEvent undisguiseEvent = new zServersUndisguiseEvent(this, entity, disguise);
+        server.callEvent(undisguiseEvent);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDisguise(DisguiseEvent event) {
+        Entity entity = event.getEntity();
+        zServer server = this.server.getManager().getServer(entity.getLocation());
+        if(entity instanceof Player player){
+            server = this.server.getManager().getServer(player);
+        }
+        if(server == null || !server.equals(this.server))
+            return;
+
+        zServerDisguise<zServerLibsDisguises> disguise = LibsDisguise.asLibsDisguise(event.getDisguise());
+        zServersDisguiseEvent disguiseEvent = new zServersDisguiseEvent(this, entity, disguise, event.isCancelled());
+        server.callEvent(disguiseEvent);
+        event.setCancelled(disguiseEvent.isCancelled());
     }
 }

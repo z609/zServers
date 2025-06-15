@@ -7,11 +7,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 
-public interface DisguiseProvider<T extends DisguiseProvider<T>> {
+public interface DisguiseProvider<T extends DisguiseProvider<T>> extends Listener {
     void onEnable();
     void onDisable();
     void onJoin(zPlayerJoinEvent event);

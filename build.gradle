@@ -35,7 +35,7 @@ dependencies {
     compileOnly fileTree('lib') { include '*.jar' }
     compileOnly 'com.github.retrooper:PacketEvents:v2.8.0'
     implementation group: 'me.libraryaddict.disguises', name: 'libsdisguises', version: '11.0.0'
-    implementation files('lib/PacketWrapper-1.12.1.jar')
+    compileOnly files('lib/PacketWrapper-1.12.1.jar')
     implementation files('lib/LibsDisguises.jar')
     compileOnly 'cloud.timo.timocloud:TimoCloud-API:6.7.9'
     implementation 'com.google.code.gson:gson:2.11.0'

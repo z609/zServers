@@ -2,10 +2,10 @@ package me.z609.servers.server.disguise;
 
 import me.z609.servers.server.disguise.providers.libs.zServerLibsDisguises;
 import me.z609.servers.server.zServer;
-import org.bukkit.event.Listener;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 
-public class zServerDisguises implements Listener {
+public class zServerDisguises {
     private final zServer server;
     private final DisguiseProvider<?> provider;
 
@@ -28,6 +28,7 @@ public class zServerDisguises implements Listener {
         if(provider == null)
             return;
         provider.onEnable();
+        server.getPlugin().getServer().getPluginManager().registerEvents(provider, server.getPlugin());
         server.logInfo("Disguise bridge(provider=" + provider.getProvidingPlugin().getName() + ") has been enabled.");
     }
 
@@ -35,6 +36,7 @@ public class zServerDisguises implements Listener {
         if(provider == null)
             return;
         provider.onDisable();
+        HandlerList.unregisterAll(provider);
         server.logInfo("Disguise bridge(provider=" + provider.getProvidingPlugin().getName() + ") has been disabled.");
     }
 
