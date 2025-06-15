@@ -18,6 +18,7 @@ repositories {
     maven {
         url "https://repo.md-5.net/content/groups/public/"
     }
+    maven { url = uri("https://jitpack.io") }
 }
 
 processResources {
@@ -32,6 +33,7 @@ version '0.1.0'
 dependencies {
 //    compileOnly 'org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT'
     compileOnly fileTree('lib') { include '*.jar' }
+    compileOnly 'com.github.retrooper:PacketEvents:v2.8.0'
     implementation group: 'me.libraryaddict.disguises', name: 'libsdisguises', version: '11.0.0'
     implementation files('lib/PacketWrapper-1.12.1.jar')
     implementation files('lib/LibsDisguises.jar')

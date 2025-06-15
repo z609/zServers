@@ -7,14 +7,14 @@ import me.z609.servers.server.disguise.zServerDisguise;
 import org.bukkit.entity.EntityType;
 
 public class LibsDisguise extends zServerDisguise<zServerLibsDisguises> {
-    private Disguise disguise;
+    private final Disguise disguise;
 
     public LibsDisguise(EntityType type) {
         super(type);
         this.disguise = new MobDisguise(getType(type));
     }
 
-    private LibsDisguise(Disguise disguise) {
+    public LibsDisguise(Disguise disguise) {
         super(disguise.getType().getEntityType());
         this.disguise = disguise;
     }
