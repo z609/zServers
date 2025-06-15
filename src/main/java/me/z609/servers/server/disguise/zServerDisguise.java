@@ -5,6 +5,10 @@ import org.bukkit.entity.EntityType;
 public abstract class zServerDisguise<T extends DisguiseProvider<T>> {
     protected EntityType type;
 
+    public zServerDisguise(){
+
+    }
+
     public zServerDisguise(EntityType type){
         this.type = type;
     }

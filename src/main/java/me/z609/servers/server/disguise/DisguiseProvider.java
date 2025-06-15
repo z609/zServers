@@ -27,7 +27,7 @@ public interface DisguiseProvider<T extends DisguiseProvider<T>> {
     zServerDisguise<T> constructDisguise(Entity entity, boolean doEquipment, boolean displayExtraAnimations);
     zServerDisguise<T> constructDisguise(Entity entity);
     zServerDisguise<T> buildDisguise(EntityType type);
-    zServerPlayerDisguise<T> buildPlayerDisguise(String name);
+    zServerPlayerDisguise buildPlayerDisguise(String name);
     void disguiseEntity(Entity entity, zServerDisguise<?> disguise);
     void disguiseEntity(CommandSender sender, Entity entity, zServerDisguise<?> disguise);
     void disguiseIgnorePlayers(Entity entity, zServerDisguise<?> disguise, Collection playersToNotSeeDisguise);

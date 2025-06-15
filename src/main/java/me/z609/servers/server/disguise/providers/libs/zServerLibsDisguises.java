@@ -101,7 +101,7 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
     }
 
     @Override
-    public zServerPlayerDisguise<zServerLibsDisguises> buildPlayerDisguise(String name) {
+    public zServerPlayerDisguise buildPlayerDisguise(String name) {
         return new LibsPlayerDisguise(name);
     }
 

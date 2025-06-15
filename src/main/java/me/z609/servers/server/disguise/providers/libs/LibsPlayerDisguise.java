@@ -10,13 +10,12 @@ import me.z609.servers.server.disguise.zServerPlayerDisguise;
 
 import java.util.UUID;
 
-public class LibsPlayerDisguise extends LibsDisguise implements zServerPlayerDisguise<zServerLibsDisguises> {
+public class LibsPlayerDisguise extends zServerPlayerDisguise<zServerLibsDisguises> {
     private final PlayerDisguise playerDisguise;
     private final WrappedGameProfile gameProfile;
 
     LibsPlayerDisguise(String name) {
-        super(new PlayerDisguise(name));
-        this.playerDisguise = (PlayerDisguise)getDisguise();
+        this.playerDisguise = new PlayerDisguise(name);
 
         UserProfile libsProfile = playerDisguise.getUserProfile();
         this.gameProfile = new WrappedGameProfile(libsProfile.getUUID(), libsProfile.getName());
@@ -51,5 +50,10 @@ public class LibsPlayerDisguise extends LibsDisguise implements zServerPlayerDis
 
     public UserProfile getSkin(){
         return playerDisguise.getUserProfile();
+    }
+
+    @Override
+    public Object getGenericDisguise() {
+        return playerDisguise;
     }
 }
