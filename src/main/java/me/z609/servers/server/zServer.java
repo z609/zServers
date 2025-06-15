@@ -1378,4 +1378,15 @@ public class zServer implements Listener {
     public zServerDisguises getDisguises() {
         return disguises;
     }
+
+    public Player getPlayer(UUID uniqueId){
+        return players.get(uniqueId);
+    }
+
+    public Player getPlayer(String name){
+        for(Player player : new HashSet<>(players.values()))
+            if(player.getName().equals(name))
+                return player;
+        return null;
+    }
 }
