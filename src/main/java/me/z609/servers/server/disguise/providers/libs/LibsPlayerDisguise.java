@@ -18,7 +18,8 @@ public class LibsPlayerDisguise extends LibsDisguise implements zServerPlayerDis
     LibsPlayerDisguise(PlayerDisguise playerDisguise) {
         this.playerDisguise = playerDisguise;
         this.disguise = playerDisguise; // update inheriting value
-        this.gameProfile = playerDisguise.getGameProfile();
+        this.gameProfile = new WrappedGameProfile(playerDisguise.getGameProfile().getUUID(), playerDisguise.getName());
+        this.gameProfile.getProperties().putAll(playerDisguise.getGameProfile().getProperties());
     }
 
     public String getName() {
