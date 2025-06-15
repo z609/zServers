@@ -17,6 +17,7 @@ public class LibsPlayerDisguise extends LibsDisguise implements zServerPlayerDis
 
     LibsPlayerDisguise(PlayerDisguise playerDisguise) {
         this.playerDisguise = playerDisguise;
+        this.disguise = playerDisguise; // update inheriting value
         this.gameProfile = playerDisguise.getGameProfile();
     }
 
