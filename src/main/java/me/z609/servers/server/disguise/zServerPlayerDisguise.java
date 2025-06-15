@@ -4,10 +4,10 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 
 import java.util.UUID;
 
-public abstract class zServerPlayerDisguise<T extends DisguiseProvider<T>> extends zServerDisguise<T> {
-    public abstract String getName();
+public interface zServerPlayerDisguise extends zServerDisguise {
+    String getName();
 
-    public abstract UUID getUUID();
+    UUID getUUID();
 
-    public abstract WrappedGameProfile getProfile();
+    WrappedGameProfile getProfile();
 }

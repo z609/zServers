@@ -7,15 +7,20 @@ import com.github.retrooper.packetevents.protocol.player.UserProfile;
 import com.google.common.collect.Multimap;
 import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
 import me.z609.servers.server.disguise.zServerPlayerDisguise;
+import org.bukkit.entity.EntityType;
 
 import java.util.UUID;
 
-public class LibsPlayerDisguise extends zServerPlayerDisguise<zServerLibsDisguises> {
+public class LibsPlayerDisguise extends LibsDisguise implements zServerPlayerDisguise {
     private final PlayerDisguise playerDisguise;
     private final WrappedGameProfile gameProfile;
 
-    LibsPlayerDisguise(String name) {
-        this.playerDisguise = new PlayerDisguise(name);
+    LibsPlayerDisguise(String name){
+        this(new PlayerDisguise(name));
+    }
+
+    LibsPlayerDisguise(PlayerDisguise playerDisguise) {
+        this.playerDisguise = playerDisguise;
 
         UserProfile libsProfile = playerDisguise.getUserProfile();
         this.gameProfile = new WrappedGameProfile(libsProfile.getUUID(), libsProfile.getName());
@@ -30,7 +35,6 @@ public class LibsPlayerDisguise extends zServerPlayerDisguise<zServerLibsDisguis
         }
     }
 
-    @Override
     public String getName() {
         return playerDisguise.getName();
     }
@@ -43,7 +47,6 @@ public class LibsPlayerDisguise extends zServerPlayerDisguise<zServerLibsDisguis
         return playerDisguise.getUUID();
     }
 
-    @Override
     public WrappedGameProfile getProfile() {
         return gameProfile;
     }
@@ -52,8 +55,17 @@ public class LibsPlayerDisguise extends zServerPlayerDisguise<zServerLibsDisguis
         return playerDisguise.getUserProfile();
     }
 
+    public static LibsPlayerDisguise asLibsDisguise(PlayerDisguise playerDisguise) {
+        return new LibsPlayerDisguise(playerDisguise);
+    }
+
     @Override
     public Object getGenericDisguise() {
         return playerDisguise;
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.PLAYER;
     }
 }

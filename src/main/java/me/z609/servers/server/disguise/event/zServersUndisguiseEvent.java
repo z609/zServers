@@ -8,9 +8,9 @@ import org.bukkit.entity.Entity;
 public class zServersUndisguiseEvent extends zServersEvent {
     private final DisguiseProvider<?> provider;
     private final Entity entity;
-    private final zServerDisguise<?> disguise;
+    private final zServerDisguise disguise;
 
-    public zServersUndisguiseEvent(DisguiseProvider<?> provider, Entity entity, zServerDisguise<?> disguise) {
+    public zServersUndisguiseEvent(DisguiseProvider<?> provider, Entity entity, zServerDisguise disguise) {
         super(provider.getServer());
         this.provider = provider;
         this.entity = entity;
@@ -25,7 +25,7 @@ public class zServersUndisguiseEvent extends zServersEvent {
         return entity;
     }
 
-    public zServerDisguise<?> getDisguise() {
+    public zServerDisguise getDisguise() {
         return disguise;
     }
 }

@@ -82,7 +82,7 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
     }
 
     @Override
-    public zServerDisguise<zServerLibsDisguises> getCustomDisguise(String disguiseName) {
+    public zServerDisguise getCustomDisguise(String disguiseName) {
         return LibsDisguise.asLibsDisguise(DisguiseAPI.getCustomDisguise(disguiseName));
     }
 
@@ -92,17 +92,17 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
     }
 
     @Override
-    public zServerDisguise<zServerLibsDisguises> constructDisguise(Entity entity, boolean doEquipment, boolean displayExtraAnimations) {
+    public zServerDisguise constructDisguise(Entity entity, boolean doEquipment, boolean displayExtraAnimations) {
         return LibsDisguise.asLibsDisguise(DisguiseAPI.constructDisguise(entity, doEquipment, displayExtraAnimations));
     }
 
     @Override
-    public zServerDisguise<zServerLibsDisguises> constructDisguise(Entity entity) {
+    public zServerDisguise constructDisguise(Entity entity) {
         return LibsDisguise.asLibsDisguise(DisguiseAPI.constructDisguise(entity));
     }
 
     @Override
-    public zServerDisguise<zServerLibsDisguises> buildDisguise(EntityType type) {
+    public zServerDisguise buildDisguise(EntityType type) {
         return new LibsDisguise(type);
     }
 
@@ -112,68 +112,68 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
     }
 
     @Override
-    public void disguiseEntity(Entity entity, zServerDisguise<?> disguise) {
+    public void disguiseEntity(Entity entity, zServerDisguise disguise) {
         DisguiseAPI.disguiseEntity(entity, ((LibsDisguise) disguise).getDisguise());
     }
 
     @Override
-    public void disguiseEntity(CommandSender sender, Entity entity, zServerDisguise<?> disguise) {
+    public void disguiseEntity(CommandSender sender, Entity entity, zServerDisguise disguise) {
         DisguiseAPI.disguiseEntity(sender, entity, ((LibsDisguise) disguise).getDisguise());
     }
 
     @Override
-    public void disguiseIgnorePlayers(Entity entity, zServerDisguise<?> disguise, Collection playersToNotSeeDisguise) {
+    public void disguiseIgnorePlayers(Entity entity, zServerDisguise disguise, Collection playersToNotSeeDisguise) {
         DisguiseAPI.disguiseIgnorePlayers(entity, ((LibsDisguise) disguise).getDisguise(), playersToNotSeeDisguise);
     }
 
     @Override
-    public void disguiseIgnorePlayers(Entity entity, zServerDisguise<?> disguise, Player... playersToNotSeeDisguise) {
+    public void disguiseIgnorePlayers(Entity entity, zServerDisguise disguise, Player... playersToNotSeeDisguise) {
         DisguiseAPI.disguiseIgnorePlayers(entity, ((LibsDisguise) disguise).getDisguise(), playersToNotSeeDisguise);
     }
 
     @Override
-    public void disguiseIgnorePlayers(Entity entity, zServerDisguise<?> disguise, String... playersToNotSeeDisguise) {
+    public void disguiseIgnorePlayers(Entity entity, zServerDisguise disguise, String... playersToNotSeeDisguise) {
         DisguiseAPI.disguiseIgnorePlayers(entity, ((LibsDisguise) disguise).getDisguise(), playersToNotSeeDisguise);
     }
 
     @Override
-    public int disguiseNextEntity(zServerDisguise<?> disguise) {
+    public int disguiseNextEntity(zServerDisguise disguise) {
         return DisguiseAPI.disguiseNextEntity(((LibsDisguise) disguise).getDisguise());
     }
 
     @Override
-    public void disguiseToAll(Entity entity, zServerDisguise<?> disguise) {
+    public void disguiseToAll(Entity entity, zServerDisguise disguise) {
         DisguiseAPI.disguiseToAll(entity, ((LibsDisguise) disguise).getDisguise());
     }
 
     @Override
-    public void disguiseToPlayers(Entity entity, zServerDisguise<?> disguise, Collection playersToViewDisguise) {
+    public void disguiseToPlayers(Entity entity, zServerDisguise disguise, Collection playersToViewDisguise) {
         DisguiseAPI.disguiseToPlayers(entity, ((LibsDisguise) disguise).getDisguise(), playersToViewDisguise);
     }
 
     @Override
-    public void disguiseToPlayers(Entity entity, zServerDisguise<?> disguise, Player... playersToViewDisguise) {
+    public void disguiseToPlayers(Entity entity, zServerDisguise disguise, Player... playersToViewDisguise) {
         DisguiseAPI.disguiseToPlayers(entity, ((LibsDisguise) disguise).getDisguise(), playersToViewDisguise);
     }
 
     @Override
-    public void disguiseToPlayers(Entity entity, zServerDisguise<?> disguise, String... playersToViewDisguise) {
+    public void disguiseToPlayers(Entity entity, zServerDisguise disguise, String... playersToViewDisguise) {
         DisguiseAPI.disguiseToPlayers(entity, ((LibsDisguise) disguise).getDisguise(), playersToViewDisguise);
     }
 
     @Override
-    public zServerDisguise<zServerLibsDisguises> getDisguise(Entity disguised) {
+    public zServerDisguise getDisguise(Entity disguised) {
         return LibsDisguise.asLibsDisguise(DisguiseAPI.getDisguise(disguised));
     }
 
     @Override
-    public zServerDisguise<zServerLibsDisguises> getDisguise(Player observer, Entity disguised) {
+    public zServerDisguise getDisguise(Player observer, Entity disguised) {
         return LibsDisguise.asLibsDisguise(DisguiseAPI.getDisguise(observer, disguised));
     }
 
     @Override
     public zServerDisguise[] getDisguises(Entity disguised) {
-        List<zServerDisguise<zServerLibsDisguises>> list = new ArrayList<>();
+        List<zServerDisguise> list = new ArrayList<>();
         Disguise[] disguises = DisguiseAPI.getDisguises(disguised);
         for (Disguise disguise : disguises)
             list.add(LibsDisguise.asLibsDisguise(disguise));
@@ -191,7 +191,7 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
     }
 
     @Override
-    public boolean isDisguiseInUse(zServerDisguise<?> disguise) {
+    public boolean isDisguiseInUse(zServerDisguise disguise) {
         return DisguiseAPI.isDisguiseInUse(((LibsDisguise)disguise).getDisguise());
     }
 
@@ -215,7 +215,7 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
         if(server == null || !server.equals(this.server))
             return;
 
-        zServerDisguise<zServerLibsDisguises> disguise = LibsDisguise.asLibsDisguise(event.getDisguise());
+        zServerDisguise disguise = LibsDisguise.asLibsDisguise(event.getDisguise());
         zServersUndisguiseEvent undisguiseEvent = new zServersUndisguiseEvent(this, entity, disguise);
         server.callEvent(undisguiseEvent);
     }
@@ -230,7 +230,7 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
         if(server == null || !server.equals(this.server))
             return;
 
-        zServerDisguise<zServerLibsDisguises> disguise = LibsDisguise.asLibsDisguise(event.getDisguise());
+        zServerDisguise disguise = LibsDisguise.asLibsDisguise(event.getDisguise());
         zServersDisguiseEvent disguiseEvent = new zServersDisguiseEvent(this, entity, disguise, event.isCancelled());
         server.callEvent(disguiseEvent);
         event.setCancelled(disguiseEvent.isCancelled());

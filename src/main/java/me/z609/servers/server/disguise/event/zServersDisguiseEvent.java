@@ -9,10 +9,10 @@ import org.bukkit.entity.Entity;
 public class zServersDisguiseEvent extends zServersEvent implements zServersCancellableEvent {
     private final DisguiseProvider<?> provider;
     private final Entity entity;
-    private final zServerDisguise<?> disguise;
+    private final zServerDisguise disguise;
     private boolean cancelled = false;
 
-    public zServersDisguiseEvent(DisguiseProvider<?> provider, Entity entity, zServerDisguise<?> disguise, boolean cancelled) {
+    public zServersDisguiseEvent(DisguiseProvider<?> provider, Entity entity, zServerDisguise disguise, boolean cancelled) {
         super(provider.getServer());
         this.provider = provider;
         this.entity = entity;
@@ -28,7 +28,7 @@ public class zServersDisguiseEvent extends zServersEvent implements zServersCanc
         return entity;
     }
 
-    public zServerDisguise<?> getDisguise() {
+    public zServerDisguise getDisguise() {
         return disguise;
     }
 
