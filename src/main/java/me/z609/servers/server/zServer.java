@@ -537,7 +537,6 @@ public class zServer implements Listener {
         player.setFallDistance(0);
         player.setExp(0);
         player.setLevel(0);
-        player.setDisplayName(player.getName());
         player.resetPlayerTime();
         player.setKiller(null);
         player.setArrowsStuck(0);
