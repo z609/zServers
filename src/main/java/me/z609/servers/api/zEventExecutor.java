@@ -1,6 +1,8 @@
 package me.z609.servers.api;
 
-@FunctionalInterface
+import org.bukkit.event.EventPriority;
+
 public interface zEventExecutor<T extends zServersEvent> {
     void execute(T event);
+    EventPriority priority();
 }

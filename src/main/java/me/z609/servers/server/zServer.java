@@ -698,7 +698,7 @@ public class zServer implements Listener {
 
     public void callEvent(zServersEvent event) {
         Class<?> eventClass = event.getClass();
-        Set<zEventExecutor<zServersEvent>> allExecutors = new LinkedHashSet<>();
+        List<zEventExecutor<zServersEvent>> allExecutors = new ArrayList<>();
 
         // Walk the class hierarchy and collect all matching executors
         while (eventClass != null && zServersEvent.class.isAssignableFrom(eventClass)) {
@@ -713,6 +713,7 @@ public class zServer implements Listener {
         }
 
         // Execute in order
+        allExecutors.sort(Comparator.comparing(e -> e.priority().ordinal()));
         for (zEventExecutor<zServersEvent> executor : allExecutors) {
             executor.execute(event);
         }
@@ -753,11 +754,19 @@ public class zServer implements Listener {
         entries.sort(Comparator.comparing(e -> e.priority.ordinal())); // LOWEST = 0, MONITOR = 5
 
         for (HandlerEntry entry : entries) {
-            zEventExecutor<? extends zServersEvent> wrapper = event -> {
-                try {
-                    entry.method.invoke(listener, event);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            zEventExecutor<? extends zServersEvent> wrapper = new zEventExecutor<zServersEvent>() {
+                @Override
+                public void execute(zServersEvent event) {
+                    try {
+                        entry.method.invoke(listener, event);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public EventPriority priority() {
+                    return entry.priority;
                 }
             };
             registerCustomListenerUnchecked(entry.eventClass, wrapper);
