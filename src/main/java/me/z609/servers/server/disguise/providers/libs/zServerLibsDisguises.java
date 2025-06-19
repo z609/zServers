@@ -1,5 +1,6 @@
 package me.z609.servers.server.disguise.providers.libs;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.LibsDisguises;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
@@ -109,6 +110,11 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
     @Override
     public zServerPlayerDisguise buildPlayerDisguise(String name) {
         return new LibsPlayerDisguise(name);
+    }
+
+    @Override
+    public zServerPlayerDisguise buildPlayerDisguise(WrappedGameProfile profile) {
+        return new LibsPlayerDisguise(profile);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package me.z609.servers.server.disguise;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import me.z609.servers.api.event.player.zPlayerJoinEvent;
 import me.z609.servers.api.event.player.zPlayerQuitEvent;
 import me.z609.servers.server.zServer;
@@ -29,6 +30,7 @@ public interface DisguiseProvider<T extends DisguiseProvider<T>> extends Listene
     zServerDisguise constructDisguise(Entity entity);
     zServerDisguise buildDisguise(EntityType type);
     zServerPlayerDisguise buildPlayerDisguise(String name);
+    zServerPlayerDisguise buildPlayerDisguise(WrappedGameProfile profile);
     void disguiseEntity(Entity entity, zServerDisguise disguise);
     void disguiseEntity(CommandSender sender, Entity entity, zServerDisguise disguise);
     void disguiseIgnorePlayers(Entity entity, zServerDisguise disguise, Collection playersToNotSeeDisguise);
