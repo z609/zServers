@@ -149,7 +149,7 @@ public class zServerLibsDisguises implements DisguiseProvider<zServerLibsDisguis
 
     @Override
     public void disguiseToAll(Entity entity, zServerDisguise disguise) {
-        DisguiseAPI.disguiseToAll(entity, (Disguise) disguise.getGenericDisguise());
+        disguiseToPlayers(entity, disguise, server.getOnlinePlayers());
     }
 
     @Override
